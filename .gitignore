@@ -58,6 +58,9 @@ buck-out
 .settings
 .classpath
 
+# Expo
+.expo
+
 # Watchman
 .watchmanconfig
 
@@ -156,3 +159,4 @@ vendor/
 
 # CircleCI
 .circleci/generated_config.yml
+
