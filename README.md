@@ -27,6 +27,6 @@ $ npx expo start
 6. **Choose how to run the application**<br/>
 After starting the project, you will be prompted to choose how you want to run the application:
    * iOS Emulator/Android Emulator
-   * `Recommended` Scan QR Code with Expo Go: Install the Expo Go app on your mobile device. Then can scan the QR code in the Expo Developer Tools to run the application on your device.
+   * `Recommended` Scan QR Code with Expo Go: [Install the Expo Go app](https://expo.dev/go) on your mobile device. Then can scan the QR code in the Expo Developer Tools to run the application on your device.
    * Run on Android device/emulator
    * Run on iOS simulator
