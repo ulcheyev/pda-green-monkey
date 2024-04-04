@@ -1,5 +1,5 @@
 # Green Monkey
-....
+Green Monkey is a practical tool designed to simplify shopping planning and organization. The application offers users an intuitive and user-friendly interface for easy creation and management of shopping lists.
 
 ## Prerequisites
 * Node.js v20.* (tested on v20.9.0)
