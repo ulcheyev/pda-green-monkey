@@ -15,11 +15,14 @@ const Header = ({ navigation }) => {
       color: theme.colors.tertiary,
       fontSize: 20,
     },
+    account: {},
   });
 
   const menuPress = () => {
     navigation.toggleDrawer();
   };
+
+  const accountPress = () => {};
 
   return (
     <Appbar.Header style={styles.header}>
@@ -31,6 +34,13 @@ const Header = ({ navigation }) => {
       <Appbar.Content
         title={utils.getCurrentScreenName(navigation)}
         titleStyle={styles.titleStyle}
+      />
+      <Appbar.Action
+        icon="account"
+        style={styles.account}
+        size={28}
+        color={theme.colors.tertiary}
+        onPress={accountPress}
       />
     </Appbar.Header>
   );
