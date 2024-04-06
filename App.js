@@ -1,35 +1,23 @@
-import { StatusBar } from "expo-status-bar";
-import {
-  Avatar,
-  Button,
-  Card,
-  MD3LightTheme,
-  PaperProvider,
-  Text,
-} from "react-native-paper";
-import { View, StyleSheet } from "react-native";
-import ListCard from "./components/ListCard";
-import ShoppingList from "./screens/ShoppingList";
+import * as React from "react";
+import { View, Text } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import "react-native-gesture-handler";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import ShoppingLists from "./screens/ShoppingLists";
+import { PaperProvider } from "react-native-paper";
+import useTheme from "./styles/AppTheme";
+import AppDrawer from "./components/AppDrawer";
 
-const theme = {
-  ...MD3LightTheme,
-  roundness: 2,
-  colors: {
-    ...MD3LightTheme.colors,
-    primary: "#663399",
-    secondary: "#f1c40f",
-    tertiary: "#a1b2c3",
-  },
-};
-
-const styles = StyleSheet.create({});
-
-const App = () => {
+function App() {
+  const theme = useTheme();
   return (
-    <PaperProvider theme={theme}>
-      <ShoppingList></ShoppingList>
-    </PaperProvider>
+    <NavigationContainer>
+      <PaperProvider theme={theme}>
+        <AppDrawer />
+      </PaperProvider>
+    </NavigationContainer>
   );
-};
+}
 
 export default App;
