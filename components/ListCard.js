@@ -1,6 +1,15 @@
 import { Avatar, Button, Card, PaperProvider, Text } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
 const ListCard = () => {
   const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
   return (
@@ -24,14 +33,5 @@ const ListCard = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
 
 export default ListCard;
