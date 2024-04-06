@@ -9,6 +9,8 @@ import {
 } from "react-native-paper";
 import { View, StyleSheet } from "react-native";
 import ListCard from "./components/ListCard";
+import ShoppingList from "./screens/ShoppingList";
+
 const theme = {
   ...MD3LightTheme,
   roundness: 2,
@@ -22,10 +24,12 @@ const theme = {
 
 const styles = StyleSheet.create({});
 
-export default function App() {
+const App = () => {
   return (
     <PaperProvider theme={theme}>
-      <ListCard></ListCard>
+      <ShoppingList></ShoppingList>
     </PaperProvider>
   );
-}
+};
+
+export default App;

@@ -6,29 +6,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
   },
 });
 
-const ListCard = () => {
+const ListCard = ({ title }) => {
   const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
   return (
     <View style={styles.container}>
       <Card>
-        <Card.Title
-          title="Card Title"
-          subtitle="Card Subtitle"
-          left={LeftContent}
-        />
         <Card.Content>
-          <Text variant="titleLarge">ALBERTOSLAV</Text>
-          <Text variant="bodyMedium">Card content</Text>
+          <Text variant="titleLarge">{title}</Text>
         </Card.Content>
-        <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
-        <Card.Actions>
-          <Button>Cancel</Button>
-          <Button>Ok</Button>
-        </Card.Actions>
       </Card>
     </View>
   );
