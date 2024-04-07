@@ -1,34 +1,27 @@
-import { Avatar, Button, Card, PaperProvider, Text } from "react-native-paper";
+import { Card, Text, useTheme } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+const ListCard = ({ title }) => {
+  const theme = useTheme();
+  const styles = StyleSheet.create({
+    listCardContainer: {
+      flex: 1,
+      flexDirection: "row",
+      margin: 8,
+    },
+    listCard: {
+      width: "100%",
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+    },
+  });
 
-const ListCard = () => {
-  const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
   return (
-    <View style={styles.container}>
-      <Card>
-        <Card.Title
-          title="Card Title"
-          subtitle="Card Subtitle"
-          left={LeftContent}
-        />
+    <View style={styles.listCardContainer}>
+      <Card style={styles.listCard}>
         <Card.Content>
-          <Text variant="titleLarge">ALBERTOSLAV</Text>
-          <Text variant="bodyMedium">Card content</Text>
+          <Text variant="titleLarge">{title}</Text>
         </Card.Content>
-        <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
-        <Card.Actions>
-          <Button>Cancel</Button>
-          <Button>Ok</Button>
-        </Card.Actions>
       </Card>
     </View>
   );
