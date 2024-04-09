@@ -11,7 +11,7 @@ const testData = [
     id: 1,
     name: "List 1",
     isTemplate: false,
-    progress: 30,
+    progress: 1,
     items: [
       { id: 1, name: "Item 1", measure: "kg", checked: false, quantity: 2 },
       { id: 2, name: "Item 2", measure: "pcs", checked: true, quantity: 1 },
@@ -22,7 +22,7 @@ const testData = [
     id: 2,
     name: "List 2",
     isTemplate: true,
-    progress: 10,
+    progress: 2,
     items: [
       { id: 1, name: "Item 1", measure: "l", checked: true, quantity: 1 },
       { id: 2, name: "Item 2", measure: "pcs", checked: false, quantity: 2 },
@@ -32,7 +32,7 @@ const testData = [
     id: 3,
     name: "List 3",
     isTemplate: false,
-    progress: 75,
+    progress: 2,
     items: [
       { id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 3 },
       { id: 2, name: "Item 2", measure: "l", checked: true, quantity: 1 },
@@ -44,7 +44,7 @@ const testData = [
     id: 4,
     name: "List 4",
     isTemplate: false,
-    progress: 75,
+    progress: 3,
     items: [
       { id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 3 },
       { id: 2, name: "Item 2", measure: "l", checked: true, quantity: 1 },
@@ -56,7 +56,7 @@ const testData = [
     id: 5,
     name: "List 5",
     isTemplate: false,
-    progress: 75,
+    progress: 3,
     items: [
       { id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 3 },
       { id: 2, name: "Item 2", measure: "l", checked: true, quantity: 1 },
@@ -68,7 +68,7 @@ const testData = [
     id: 6,
     name: "List 6",
     isTemplate: false,
-    progress: 75,
+    progress: 4,
     items: [
       { id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 3 },
       { id: 2, name: "Item 2", measure: "l", checked: true, quantity: 1 },
