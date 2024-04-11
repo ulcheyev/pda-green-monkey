@@ -3,7 +3,16 @@ import { useMemo } from "react";
 class Utils {
   getCurrentScreenName(navigation) {
     let state = navigation.getState();
-    return state.routeNames[state.index];
+    let currRoute = state.routes[state.index];
+    return currRoute.params?.title || currRoute.name;
+  }
+
+  getListItemsSize(lizt) {
+    let size = 0;
+    for (let shop of lizt.shops) {
+      size += shop.items.length;
+    }
+    return size;
   }
 }
 
