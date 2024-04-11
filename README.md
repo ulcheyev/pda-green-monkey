@@ -1,6 +1,7 @@
 # Green Monkey
 
-Green Monkey is a practical tool designed to simplify shopping planning and organization. The application offers users an intuitive and user-friendly interface for easy creation and management of shopping lists.
+Green Monkey is a practical tool designed to simplify shopping planning and organization. The application offers users
+an intuitive and user-friendly interface for easy creation and management of shopping lists.
 
 ## Prerequisites
 
@@ -10,7 +11,8 @@ Green Monkey is a practical tool designed to simplify shopping planning and orga
 ## Expose locally
 
 1. **Install Node.js and npm**<br/>
-   Make sure you have Node.js and npm installed. You can download them from the official [Node.js website](https://nodejs.org/en).
+   Make sure you have Node.js and npm installed. You can download them from the
+   official [Node.js website](https://nodejs.org/en).
 2. **Install Expo CLI**<br/>
    Install the Expo CLI globally by running the following command in your terminal or command prompt:
 
@@ -36,6 +38,7 @@ $ npx expo start
 6. **Choose how to run the application**<br/>
    After starting the project, you will be prompted to choose how you want to run the application:
    - iOS Emulator/Android Emulator
-   - `Recommended` Scan QR Code with Expo Go: [Install the Expo Go app](https://expo.dev/go) on your mobile device. Then can scan the QR code in the Expo Developer Tools to run the application on your device.
+   - `Recommended` Scan QR Code with Expo Go: [Install the Expo Go app](https://expo.dev/go) on your mobile device.
+     Then can scan the QR code in the Expo Developer Tools to run the application on your device.
    - Run on Android device/emulator
    - Run on iOS simulator

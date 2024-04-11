@@ -1,40 +1,49 @@
 import * as React from "react";
 import { Icon, Text, useTheme } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
-import ShoppingLists from "../screens/ShoppingLists";
+import ShoppingLists from "../screens/shopping-lists/ShoppingLists";
 import "react-native-gesture-handler";
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
   DrawerItem,
 } from "@react-navigation/drawer";
-import Header from "./Header";
 
 const screens = [
-  { name: "Lists", label: "Lists", icon: "basket", component: ShoppingLists },
+  {
+    name: "ShoppingLists",
+    label: "Lists",
+    icon: "basket",
+    component: ShoppingLists,
+    show: true,
+  },
   {
     name: "Notifications",
     label: "Notifications",
     icon: "tooltip",
     component: ShoppingLists,
+    show: true,
   },
   {
     name: "Settings",
     label: "Settings",
     icon: "cog",
     component: ShoppingLists,
+    show: true,
   },
   {
     name: "Help",
     label: "Help",
     icon: "help-circle",
     component: ShoppingLists,
+    show: true,
   },
   {
     name: "Statistics",
     label: "Statistics",
     icon: "poll",
     component: ShoppingLists,
+    show: true,
   },
 ];
 
@@ -73,22 +82,25 @@ const CustomDrawerContent = (props) => {
           <Text variant="headlineMedium">Green Monkey</Text>
         </View>
         <View style={styles.itemsContainer}>
-          {screens.map((screen, index) => (
-            <DrawerItem
-              key={index}
-              label={screen.label}
-              focused={props.state.index === index}
-              icon={({ focused, color, size }) => (
-                <Icon size={size} source={screen.icon} />
-              )}
-              onPress={() => {
-                props.navigation.navigate(screen.name);
-              }}
-              labelStyle={styles.labelStyle}
-              activeBackgroundColor={styles.activeBackgroundColor}
-              style={styles.drawerItem}
-            />
-          ))}
+          {screens.map(
+            (screen, index) =>
+              screen.show && (
+                <DrawerItem
+                  key={index}
+                  label={screen.label}
+                  focused={props.state.index === index}
+                  icon={({ focused, color, size }) => (
+                    <Icon size={size} source={screen.icon} />
+                  )}
+                  onPress={() => {
+                    props.navigation.navigate(screen.name);
+                  }}
+                  labelStyle={styles.labelStyle}
+                  activeBackgroundColor={styles.activeBackgroundColor}
+                  style={styles.drawerItem}
+                />
+              ),
+          )}
         </View>
       </View>
     </DrawerContentScrollView>
@@ -108,10 +120,10 @@ const AppDrawer = () => {
   return (
     <Drawer.Navigator
       screenOptions={{
-        header: (props) => <Header {...props} />,
-        drawerStyle: styles.drawer,
+        headerShown: false,
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
+      initialRouteName="ShoppingLists"
     >
       {screens.map((screen, index) => (
         <Drawer.Screen

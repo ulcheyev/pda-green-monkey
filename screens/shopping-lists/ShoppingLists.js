@@ -1,24 +1,21 @@
-import {
-  Button,
-  FAB,
-  HelperText,
-  Text,
-  TextInput,
-  useTheme,
-} from "react-native-paper";
-import ListCard from "../components/ListCard";
+import { Button, FAB, Text, TextInput, useTheme } from "react-native-paper";
+import ListCard from "../../components/ListCard";
+import * as React from "react";
 import { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import DataManager from "../services/DataManager";
-import MonkeyModal from "../components/MonkeyModal";
-import * as React from "react";
-import { text } from "ionicons/icons";
+import DataManager from "../../services/DataManager";
+import MonkeyModal from "../../components/MonkeyModal";
+import { createStackNavigator } from "@react-navigation/stack";
+import Header from "../../components/Header";
+import ShoppingList from "./ShoppingList";
+import useUtils from "../../utils/Utils";
 
-const ShoppingLists = () => {
-  const MAX_LIST_NAME_LENGTH = 30;
+const ShoppingListsContent = (props) => {
   const [visible, setVisible] = useState(false);
   const dataManager = new DataManager();
-  const [lists, setLists] = useState(dataManager.getTestData()); //todo make this dynamic
+  const utils = useUtils();
+  const [lists, setLists] = useState(dataManager.getTestData());
+  const [isError, setIsError] = useState(false);
   const [creationListName, setCreationListName] = React.useState("");
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -97,19 +94,25 @@ const ShoppingLists = () => {
   const hideModal = () => {
     setVisible(false);
     setCreationListName("");
+    setIsError(false);
   };
 
-  const createList = (list) => {
+  const createList = () => {
+    if (!creationListName) {
+      setIsError(true);
+      return;
+    }
     const newList = {
       id: lists.length + 1,
       name: creationListName,
       isTemplate: false,
       progress: 0,
-      items: [],
+      shops: [],
     };
     setLists([...lists, newList]);
     setVisible(false);
     setCreationListName("");
+    setIsError(false);
   };
 
   const onChangeCreationListName = (text) => setCreationListName(text);
@@ -119,14 +122,15 @@ const ShoppingLists = () => {
       <FlatList
         alwaysBounceVertical={false}
         data={lists}
-        renderItem={(list) => {
+        renderItem={(lizt) => {
           return (
             <ListCard
-              title={list.item.name}
+              list={lizt.item}
               progress={{
-                value: list.item.progress,
-                overall: list.item.items.length,
+                value: lizt.item.progress,
+                overall: utils.getListItemsSize(lizt.item),
               }}
+              navigation={props.navigation}
             />
           );
         }}
@@ -150,6 +154,7 @@ const ShoppingLists = () => {
             value={creationListName}
             onChangeText={onChangeCreationListName}
             style={styles.listNameInput}
+            error={isError && "red"}
           />
         </View>
         <View style={styles.templateContainer}>
@@ -171,6 +176,21 @@ const ShoppingLists = () => {
         </Button>
       </MonkeyModal>
     </View>
+  );
+};
+
+const ShoppingLists = () => {
+  const Stack = createStackNavigator();
+  return (
+    <Stack.Navigator
+      initialRouteName={"Shopping lists"}
+      screenOptions={{
+        header: (headerProps) => <Header {...headerProps} />,
+      }}
+    >
+      <Stack.Screen name="Lists" component={ShoppingListsContent} />
+      <Stack.Screen name={"ShoppingList"} component={ShoppingList} />
+    </Stack.Navigator>
   );
 };
 

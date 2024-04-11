@@ -3,7 +3,7 @@ import * as React from "react";
 import { StyleSheet } from "react-native";
 import useUtils from "../utils/Utils";
 
-const Header = ({ navigation }) => {
+const Header = ({ navigation, back }) => {
   const utils = useUtils();
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -26,11 +26,20 @@ const Header = ({ navigation }) => {
 
   return (
     <Appbar.Header style={styles.header}>
-      <Appbar.Action
-        icon="menu"
-        color={theme.colors.tertiary}
-        onPress={menuPress}
-      />
+      {back ? (
+        <Appbar.BackAction
+          color={theme.colors.tertiary}
+          size={21}
+          onPress={navigation.goBack}
+        />
+      ) : (
+        <Appbar.Action
+          icon="menu"
+          color={theme.colors.tertiary}
+          onPress={menuPress}
+        />
+      )}
+
       <Appbar.Content
         title={utils.getCurrentScreenName(navigation)}
         titleStyle={styles.titleStyle}

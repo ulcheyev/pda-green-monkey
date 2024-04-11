@@ -35,21 +35,32 @@ const ListCard = (props) => {
     circularTitle: { fontWeight: "bold", color: "black", fontSize: 18 },
   });
 
+  const onCardPress = () => {
+    props.navigation.navigate("ShoppingList", {
+      title: props.list.name,
+      list: props.list,
+    });
+  };
+
   return (
     <View style={styles.listCardContainer}>
-      <Card style={styles.listCard}>
+      <Card style={styles.listCard} onPress={onCardPress}>
         <Card.Content style={styles.listCardContent}>
           <View style={styles.listCardLeftItems}>
             <CircularProgress
               value={props.progress.value}
               radius={42}
-              activeStrokeColor={"#8590C8"}
+              activeStrokeColor={
+                props.progress.value === props.progress.overall
+                  ? "green"
+                  : "#8590C8"
+              }
               inActiveStrokeColor={"#C2CAF2"}
               progressValueStyle={styles.progressValueStyle}
               maxValue={props.progress.overall}
               valueSuffix={`/${props.progress.overall}`}
             />
-            <Text variant="titleLarge">{props.title}</Text>
+            <Text variant="titleLarge">{props.list.name}</Text>
           </View>
           <View style={styles.listCardRightItems}>
             <Icon size={25} source={"dots-vertical"} />

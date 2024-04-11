@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { Button, IconButton, Text, useTheme } from "react-native-paper";
+import { IconButton, Text, useTheme } from "react-native-paper";
 import {
   KeyboardAvoidingView,
   Modal,
