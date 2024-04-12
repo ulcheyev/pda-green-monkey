@@ -2,6 +2,7 @@ import * as React from "react";
 import { Icon, Text, useTheme } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 import ShoppingLists from "../screens/shopping-lists/ShoppingLists";
+import Notifications from "../screens/notifications/Notifications";
 import "react-native-gesture-handler";
 import {
   createDrawerNavigator,
@@ -21,7 +22,7 @@ const screens = [
     name: "Notifications",
     label: "Notifications",
     icon: "tooltip",
-    component: ShoppingLists,
+    component: Notifications,
     show: true,
   },
   {
