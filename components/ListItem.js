@@ -44,7 +44,7 @@ const ListItem = ({ item }) => {
       marginTop: -18,
     },
     photoIcon: {
-      marginTop: 2,
+      marginTop: 3,
       marginRight: 7,
     },
   });
