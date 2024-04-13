@@ -5,6 +5,14 @@ class DataManager {
   getTestNotifications = () => {
     return testNotifications;
   };
+  changeTestNotificationCheckedById = (id) => {
+    testNotifications = testNotifications.map((item) => {
+      if (item.id == id) {
+        item.checked = !item.checked;
+      }
+      return item;
+    });
+  };
 }
 
 export default DataManager;
@@ -437,7 +445,7 @@ const testData = [
     ],
   },
 ];
-const testNotifications = [
+var testNotifications = [
   {
     id: 1,
     name: "Oh no app crashed",

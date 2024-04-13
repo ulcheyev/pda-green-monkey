@@ -4,7 +4,10 @@ import { Icon, Text, useTheme } from "react-native-paper";
 import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 import ProgressBar from "./ProgressBar";
 import ListItem from "./ListItem";
-import { FlatList } from "react-native-gesture-handler";
+import {
+  FlatList,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
 
 const ShopCard = (props) => {
   const [expanded, setExpanded] = useState(false);
@@ -44,6 +47,7 @@ const ShopCard = (props) => {
   });
 
   const toggleExpand = () => {
+    console.log("Clicked parent");
     if (expanded) {
       Animated.timing(animationValue, {
         toValue: 0,
@@ -75,7 +79,7 @@ const ShopCard = (props) => {
   };
 
   return (
-    <TouchableOpacity onPress={toggleExpand}>
+    <TouchableWithoutFeedback onPress={toggleExpand}>
       <View style={styles.shopListAccordion}>
         <View style={styles.accordionTitleContainer}>
           <Text style={styles.accordionTitle}>{props.shop.name}</Text>
@@ -118,7 +122,7 @@ const ShopCard = (props) => {
           </View>
         </Animated.View>
       </View>
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
 };
 
