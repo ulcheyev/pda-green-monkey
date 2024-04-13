@@ -9,6 +9,7 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from "@react-navigation/drawer";
+import HelpPage from "../screens/help/HelpPage";
 
 const screens = [
   {
@@ -36,7 +37,7 @@ const screens = [
     name: "Help",
     label: "Help",
     icon: "help-circle",
-    component: ShoppingLists,
+    component: HelpPage,
     show: true,
   },
   {

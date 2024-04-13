@@ -53,11 +53,6 @@ const ListItem = ({ item }) => {
     dataManager.changeTestNotificationCheckedById(item.item.id);
 
     setChecked(!checked);
-    if (!checked) {
-      console.log(`DIsabling ${item.item.id}`);
-    } else {
-      console.log(`Enabling ${item.item.id}`);
-    }
   };
 
   var photo;
@@ -72,8 +67,6 @@ const ListItem = ({ item }) => {
   } else {
     photo = <></>;
   }
-
-  console.log(item.item);
 
   return (
     <TouchableOpacity

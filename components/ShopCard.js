@@ -47,7 +47,6 @@ const ShopCard = (props) => {
   });
 
   const toggleExpand = () => {
-    console.log("Clicked parent");
     if (expanded) {
       Animated.timing(animationValue, {
         toValue: 0,
