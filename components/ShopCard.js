@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
+import AddItemButton from "./AddItemButton";
 
 const ShopCard = (props) => {
   const [expanded, setExpanded] = useState(false);
@@ -109,8 +110,6 @@ const ShopCard = (props) => {
         />
         <Animated.View style={styles.animationStyle}>
           <View style={styles.itemsContainer}>
-            <Text>prihodit kak to drakon k kabanu</Text>
-
             <FlatList
               alwaysBounceVertical={false}
               data={props.shop.items}
@@ -118,6 +117,7 @@ const ShopCard = (props) => {
                 return <ListItem item={item} />;
               }}
             />
+            <AddItemButton shop={props.shop} addItem={props.addItem} />
           </View>
         </Animated.View>
       </View>

@@ -11,13 +11,13 @@ const Notifications = () => {
   const Stack = createStackNavigator();
   return (
     <Stack.Navigator
-      initialRouteName={"NotificationCard"}
+      initialRouteName={"All notifications"}
       screenOptions={{
         header: (headerProps) => <Header {...headerProps} />,
       }}
     >
       <Stack.Screen
-        name={"Notifications"}
+        name={"All notifications"}
         component={NotificationCardsContent}
       />
       <Stack.Screen
@@ -30,7 +30,7 @@ const Notifications = () => {
 
 const NotificationCardsContent = (props) => {
   const dataManager = new DataManager();
-  const [notifications, setNotifications] = useState(
+  const [notificationsData, setNotificationsData] = useState(
     dataManager.getTestNotifications(),
   );
 
@@ -49,7 +49,7 @@ const NotificationCardsContent = (props) => {
     <View style={styles.notificationContainer}>
       <FlatList
         alwaysBounceVertical={false}
-        data={notifications}
+        data={notificationsData}
         renderItem={(notification) => {
           return (
             <NotificationCard

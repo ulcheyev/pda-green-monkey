@@ -1,6 +1,13 @@
 import ShopCard from "../../components/ShopCard";
 import { FlatList, StyleSheet, View } from "react-native";
-import { Button, FAB, TextInput, useTheme } from "react-native-paper";
+import {
+  Button,
+  FAB,
+  TextInput,
+  useTheme,
+  Icon,
+  Text,
+} from "react-native-paper";
 import ProgressBar from "../../components/ProgressBar";
 import useUtils from "../../utils/Utils";
 import * as React from "react";
@@ -12,8 +19,21 @@ const ShoppingList = (props) => {
   const [addShopName, setAddShopName] = React.useState("");
   const [isError, setIsError] = useState(false);
   const [shops, setShops] = useState(props.route.params.list.shops);
+  const [shopToAddItem, setShopToAddItem] = useState("");
+  const [addItemName, setAddItemName] = useState("");
+  const [addItemPrice, setAddItemPrice] = useState("");
+  const [addItemQuantity, setAddItemQuantity] = useState("1");
+  const [addItemUnit, setAddItemUnit] = useState("pts");
+  const [addItemModalVisible, setAddItemModalVisible] = useState(false);
+  const [itemNameError, setItemNameError] = useState(false);
+  const [quantityError, setQuantityError] = useState(false);
+  const [priceError, setPriceError] = useState(false);
+  const [unitError, setUnitError] = useState(false);
   const utils = useUtils();
   const theme = useTheme();
+
+  const units = ["g", "dg", "kg", "ml", "L", "pts"];
+
   const styles = StyleSheet.create({
     shopCardContainer: {
       flex: 1,
@@ -58,6 +78,36 @@ const ShoppingList = (props) => {
       borderTopLeftRadius: 10,
       backgroundColor: theme.colors.tertiary,
     },
+    addPhotoButton: {
+      marginTop: -10,
+      backgroundColor: theme.colors.tertiary,
+      marginBottom: 15,
+      borderRadius: 20,
+    },
+    horizontalContainer: {
+      //marginTop: -5,
+
+      flex: 1,
+      flexDirection: "row",
+      flexWrap: "nowrap",
+      justifyContent: "space-between",
+    },
+    thirdInput: {
+      borderTopRightRadius: 10,
+      borderTopLeftRadius: 10,
+      backgroundColor: theme.colors.tertiary,
+      width: "30%",
+    },
+    unitButton: {
+      height: 35,
+      width: 10,
+      backgroundColor: theme.colors.tertiary,
+      color: theme.colors.primary,
+      padding: 0,
+    },
+    unitButtonLabel: {
+      color: theme.colors.primary,
+    },
   });
 
   const fabOnPress = () => {
@@ -68,6 +118,24 @@ const ShoppingList = (props) => {
     setVisible(false);
     setAddShopName("");
     setIsError(false);
+  };
+
+  const hideAddItemModal = () => {
+    setAddItemModalVisible(false);
+    setShopToAddItem("");
+    setAddItemUnit("pts"), setAddItemQuantity("1");
+    setAddItemPrice("");
+    setAddItemName("");
+    setItemNameError(false);
+    setPriceError(false);
+    setQuantityError(false);
+    setUnitError(false);
+  };
+
+  const openAddItemModal = (shop) => {
+    setAddItemModalVisible(true);
+    setShopToAddItem(shop.name);
+    //console.log(`Adding item to shop ${shop.name}`);
   };
 
   const addShop = () => {
@@ -83,6 +151,49 @@ const ShoppingList = (props) => {
     setIsError(false);
     setShops([...shops, newShop]);
     setVisible(false);
+  };
+
+  const validateNumeric = (text) => {
+    return /^\d+$/.test(text);
+  };
+
+  const validateEmpty = (text) => {
+    return text.trim().length === 0;
+  };
+
+  const addItem = () => {
+    /**
+     * Validate name, quantity, price, unit */
+    let error = false;
+    if (validateEmpty(addItemName)) {
+      error = true;
+      setItemNameError(true);
+    } else {
+      setItemNameError(false);
+    }
+    if (validateEmpty(addItemQuantity) || !validateNumeric(addItemQuantity)) {
+      error = true;
+      setQuantityError(true);
+    } else {
+      setQuantityError(false);
+    }
+    if (validateEmpty(addItemPrice) || !validateNumeric(addItemPrice)) {
+      error = true;
+      setPriceError(true);
+    } else {
+      setPriceError(false);
+    }
+    if (validateEmpty(addItemUnit)) {
+      error = true;
+      setUnitError(true);
+    } else {
+      setUnitError(false);
+    }
+    if (!error) {
+      console.log("Added item");
+      console.log(addItemName);
+      hideAddItemModal();
+    }
   };
 
   return (
@@ -113,6 +224,7 @@ const ShoppingList = (props) => {
               <ShopCard
                 shop={shop.item}
                 listProgress={props.route.params.list.progress}
+                addItem={openAddItemModal}
               />
             );
           }}
@@ -144,6 +256,82 @@ const ShoppingList = (props) => {
             labelStyle={styles.buttonTitleStyle}
           >
             Add
+          </Button>
+        </MonkeyModal>
+        <MonkeyModal
+          visible={addItemModalVisible}
+          hideModal={hideAddItemModal}
+          modalContentStyle={styles.modalContentStyle}
+          modalContainerStyle={styles.modalContainer}
+          title={`Add item to ${shopToAddItem}`}
+        >
+          <View>
+            <View
+              style={{
+                width: "40%",
+                alignContent: "space-between",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Button style={styles.addPhotoButton}>
+                <Icon source="attachment"></Icon>
+                Add photo
+              </Button>
+            </View>
+            <TextInput
+              label="Item name"
+              style={styles.shopNameInput}
+              onChangeText={setAddItemName}
+              error={itemNameError && "red"}
+            />
+          </View>
+          <View style={styles.horizontalContainer} marginTop={15}>
+            <TextInput
+              label="Quantity"
+              style={styles.thirdInput}
+              onChangeText={setAddItemQuantity}
+              error={quantityError && "red"}
+              defaultValue={addItemQuantity.toString()}
+            />
+            <TextInput
+              label="Price"
+              style={styles.thirdInput}
+              onChangeText={setAddItemPrice}
+              error={priceError && "red"}
+            />
+            <TextInput
+              label="Unit"
+              style={styles.thirdInput}
+              onChangeText={setAddItemUnit}
+              textContentType=""
+              value={addItemUnit}
+              error={unitError && "red"}
+            />
+          </View>
+          <View style={styles.horizontalContainer} marginTop={15}>
+            <Text style={styles.buttonTitleStyle} variant="bodyMedium">
+              {" "}
+              Choose unit
+            </Text>
+          </View>
+          <View style={styles.horizontalContainer}>
+            {units.map((item) => (
+              <Button
+                style={styles.unitButton}
+                labelStyle={styles.unitButtonLabel}
+                onPress={() => setAddItemUnit(item)}
+              >
+                {item}
+              </Button>
+            ))}
+          </View>
+          <Button
+            style={styles.button}
+            onPress={addItem}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Done
           </Button>
         </MonkeyModal>
       </View>

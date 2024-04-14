@@ -47,7 +47,7 @@ const NotificationCard = ({ notification, navigation }) => {
             </Text>
             {notification.isNew ? (
               <View style={styles.newIcon}>
-                <Icon source="alert-circle"></Icon>
+                <Icon source="brightness-1" color="red"></Icon>
               </View>
             ) : null}
           </View>
