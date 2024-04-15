@@ -13,6 +13,9 @@ import useUtils from "../../utils/Utils";
 import * as React from "react";
 import { useState } from "react";
 import MonkeyModal from "../../components/MonkeyModal";
+import DataManager from "../../services/DataManager";
+import { measure } from "react-native-reanimated";
+import { ScrollView } from "react-native-gesture-handler";
 
 const ShoppingList = (props) => {
   const [visible, setVisible] = useState(false);
@@ -32,7 +35,7 @@ const ShoppingList = (props) => {
   const utils = useUtils();
   const theme = useTheme();
 
-  const units = ["g", "dg", "kg", "ml", "L", "pts"];
+  const units = ["g", "kg", "ml", "L", "pts"];
 
   const styles = StyleSheet.create({
     shopCardContainer: {
@@ -109,6 +112,8 @@ const ShoppingList = (props) => {
       color: theme.colors.primary,
     },
   });
+
+  const dataManager = new DataManager();
 
   const fabOnPress = () => {
     setVisible(true);
@@ -193,6 +198,18 @@ const ShoppingList = (props) => {
       console.log("Added item");
       console.log(addItemName);
       hideAddItemModal();
+      //{ id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 2 }
+      dataManager.addItemToShopInListId(
+        shopToAddItem,
+        props.route.params.list.id,
+        {
+          id: 12312,
+          name: addItemName,
+          measure: addItemUnit,
+          checked: false,
+          quantity: addItemQuantity,
+        },
+      );
     }
   };
 
@@ -304,7 +321,6 @@ const ShoppingList = (props) => {
               label="Unit"
               style={styles.thirdInput}
               onChangeText={setAddItemUnit}
-              textContentType=""
               value={addItemUnit}
               error={unitError && "red"}
             />
@@ -315,12 +331,14 @@ const ShoppingList = (props) => {
               Choose unit
             </Text>
           </View>
+
           <View style={styles.horizontalContainer}>
             {units.map((item) => (
               <Button
                 style={styles.unitButton}
                 labelStyle={styles.unitButtonLabel}
                 onPress={() => setAddItemUnit(item)}
+                key={`button/${item}`}
               >
                 {item}
               </Button>

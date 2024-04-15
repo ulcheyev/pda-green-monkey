@@ -13,11 +13,23 @@ class DataManager {
       return item;
     });
   };
+  addItemToShopInListId = (shop, listId, item) => {
+    testData = testData.map((list) => {
+      if (list.id == listId) {
+        list.shop = list.shops.map((shop) => {
+          if (shop.name == shop) {
+            shop.items.push(item);
+          }
+        });
+      }
+      return list;
+    });
+  };
 }
 
 export default DataManager;
 
-const testData = [
+var testData = [
   {
     id: 1,
     name: "List 1",
