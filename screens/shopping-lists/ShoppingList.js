@@ -44,6 +44,11 @@ const ShoppingList = (props) => {
       paddingTop: 4,
       backgroundColor: theme.colors.tertiary,
     },
+    verticalContainer: {
+      alignItems: "center",
+      flexDirection: "column",
+      justifyContent: "center",
+    },
     fab: {
       position: "absolute",
       margin: 15,
@@ -82,7 +87,6 @@ const ShoppingList = (props) => {
       backgroundColor: theme.colors.tertiary,
     },
     addPhotoButton: {
-      marginTop: -10,
       backgroundColor: theme.colors.tertiary,
       marginBottom: 15,
       borderRadius: 20,
@@ -103,7 +107,6 @@ const ShoppingList = (props) => {
     },
     unitButton: {
       height: 35,
-      width: 10,
       backgroundColor: theme.colors.tertiary,
       color: theme.colors.primary,
       padding: 0,
@@ -281,6 +284,11 @@ const ShoppingList = (props) => {
           modalContentStyle={styles.modalContentStyle}
           modalContainerStyle={styles.modalContainer}
           title={`Add item to ${shopToAddItem}`}
+          leftSideHeaderItems={
+            <Button style={styles.addPhotoButton}>
+              <Icon source="camera"></Icon>
+            </Button>
+          }
         >
           <View>
             <View
@@ -290,12 +298,7 @@ const ShoppingList = (props) => {
                 display: "flex",
                 flexDirection: "column",
               }}
-            >
-              <Button style={styles.addPhotoButton}>
-                <Icon source="attachment"></Icon>
-                Add photo
-              </Button>
-            </View>
+            ></View>
             <TextInput
               label="Item name"
               style={styles.shopNameInput}
