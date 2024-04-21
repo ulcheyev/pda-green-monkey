@@ -62,6 +62,10 @@ const MonkeyModal = (props) => {
     },
     leftSideHeaderItems: {
       flex: 1,
+      marginTop: 9,
+      alignItems: "center",
+      flexDirection: "column",
+      justifyContent: "flex-end",
     },
   });
 

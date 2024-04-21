@@ -3,6 +3,12 @@ import { useState } from "react";
 import { Icon, Text, useTheme } from "react-native-paper";
 import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 import ProgressBar from "./ProgressBar";
+import ListItem from "./ListItem";
+import {
+  FlatList,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
+import AddItemButton from "./AddItemButton";
 
 const ShopCard = (props) => {
   const [expanded, setExpanded] = useState(false);
@@ -29,7 +35,7 @@ const ShopCard = (props) => {
       }),
       overflow: "hidden",
     },
-    itemsContainer: { backgroundColor: "#f0f0f0", padding: 10 },
+    itemsContainer: { padding: 10 },
     accordionTitleContainer: {
       margin: 10,
       flex: 1,
@@ -73,7 +79,7 @@ const ShopCard = (props) => {
   };
 
   return (
-    <TouchableOpacity onPress={toggleExpand}>
+    <TouchableWithoutFeedback onPress={toggleExpand}>
       <View style={styles.shopListAccordion}>
         <View style={styles.accordionTitleContainer}>
           <Text style={styles.accordionTitle}>{props.shop.name}</Text>
@@ -104,15 +110,18 @@ const ShopCard = (props) => {
         />
         <Animated.View style={styles.animationStyle}>
           <View style={styles.itemsContainer}>
-            <// todo extendable shop items
-            Text
-            >
-              prihodit kak to drakon k kabanu
-            </Text>
+            <FlatList
+              alwaysBounceVertical={false}
+              data={props.shop.items}
+              renderItem={(item) => {
+                return <ListItem item={item} />;
+              }}
+            />
+            <AddItemButton shop={props.shop} addItem={props.addItem} />
           </View>
         </Animated.View>
       </View>
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
 };
 

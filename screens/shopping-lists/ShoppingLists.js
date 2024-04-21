@@ -22,7 +22,8 @@ const ShoppingListsContent = (props) => {
     listsContainer: {
       flex: 1,
       alignItems: "flex-start",
-      marginTop: 4,
+      paddingTop: 4,
+      backgroundColor: theme.colors.tertiary,
     },
     fab: {
       position: "absolute",

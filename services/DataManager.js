@@ -2,11 +2,34 @@ class DataManager {
   getTestData = () => {
     return testData;
   };
+  getTestNotifications = () => {
+    return testNotifications;
+  };
+  changeTestNotificationCheckedById = (id) => {
+    testNotifications = testNotifications.map((item) => {
+      if (item.id == id) {
+        item.checked = !item.checked;
+      }
+      return item;
+    });
+  };
+  addItemToShopInListId = (shop, listId, item) => {
+    testData = testData.map((list) => {
+      if (list.id == listId) {
+        list.shop = list.shops.map((shop) => {
+          if (shop.name == shop) {
+            shop.items.push(item);
+          }
+        });
+      }
+      return list;
+    });
+  };
 }
 
 export default DataManager;
 
-const testData = [
+var testData = [
   {
     id: 1,
     name: "List 1",
@@ -18,7 +41,15 @@ const testData = [
         items: [
           { id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 2 },
           { id: 2, name: "Item 2", measure: "pcs", checked: true, quantity: 1 },
-          { id: 3, name: "Item 3", measure: "ml", checked: true, quantity: 3 },
+          {
+            id: 3,
+            name: "Item 3",
+            measure: "ml",
+            checked: true,
+            quantity: 3,
+            photo:
+              "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF",
+          },
         ],
       },
       {
@@ -424,5 +455,21 @@ const testData = [
         ],
       },
     ],
+  },
+];
+var testNotifications = [
+  {
+    id: 1,
+    name: "Oh no app crashed",
+    isNew: false,
+    detailedText:
+      "Donec mattis convallis leo in hendrerit. Aenean posuere suscipit luctus. Praesent lacus tortor, tincidunt in mauris at, tempor consequat nunc. Quisque vehicula enim sem. Pellentesque blandit felis vel quam dignissim euismod quis vel orci. Cras sodales eros id enim venenatis, sit amet imperdiet lorem rutrum. Donec iaculis odio sit amet enim posuere ornare.",
+  },
+  {
+    id: 2,
+    name: "Lorem 2",
+    isNew: true,
+    detailedText:
+      "Nulla nec tempor sem, ac suscipit quam. Fusce odio nunc, hendrerit quis orci quis, sollicitudin gravida mauris. Donec vehicula tincidunt nulla, sit amet lacinia eros. ",
   },
 ];
