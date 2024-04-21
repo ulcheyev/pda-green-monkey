@@ -90,6 +90,7 @@ const ShoppingList = (props) => {
       backgroundColor: theme.colors.tertiary,
       marginBottom: 15,
       borderRadius: 20,
+      width: "85%",
     },
     horizontalContainer: {
       //marginTop: -5,
@@ -286,7 +287,7 @@ const ShoppingList = (props) => {
           title={`Add item to ${shopToAddItem}`}
           leftSideHeaderItems={
             <Button style={styles.addPhotoButton}>
-              <Icon source="camera"></Icon>
+              <Icon source="camera" size={17}></Icon>
             </Button>
           }
         >
