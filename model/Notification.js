@@ -1,7 +1,9 @@
 class Notification {
-  constructor(text, header) {
+  constructor(detailedText, name) {
     this.date = Date().toDateString();
-    this.header = header;
-    this.text = text;
+    this.header = name;
+    this.text = detailedText;
   }
 }
+
+export default Notification;

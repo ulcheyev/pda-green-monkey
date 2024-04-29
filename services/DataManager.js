@@ -1,6 +1,7 @@
 import Item from "../model/Item";
 import List from "../model/List";
 import Shop from "../model/Shop";
+import Notification from "../model/Notification";
 
 class DataManager {
   getTestData = () => {
@@ -20,18 +21,18 @@ class DataManager {
         });
         return s;
       });
-      console.log(
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-      );
       l.updateProgress();
       return l;
     });
 
-    console.log(dataList);
     return dataList;
   };
+
   getTestNotifications = () => {
-    return testNotifications;
+    return testNotifications.map(
+      (notificationItem) =>
+        new Notification(notificationItem.detailedText, notificationItem.name),
+    );
   };
   changeTestNotificationCheckedById = (id) => {
     testNotifications = testNotifications.map((item) => {
