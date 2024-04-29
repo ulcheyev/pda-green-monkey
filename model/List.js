@@ -1,9 +1,10 @@
 class List {
-  constructor(name) {
+  constructor(name, id, shops = []) {
+    this.id = id;
     this.name = name;
     this.isTemplate = false;
-    this.shops = [];
-    this.progress = updateProgress();
+    this.shops = shops;
+    this.progress = this.updateProgress();
   }
 
   addShop(shop) {
@@ -22,11 +23,14 @@ class List {
     this.shops.map((shop) =>
       shop.items.map((item) => {
         numItems++;
-        if (item.checkedItems) {
+        if (item.checked) {
           checkedItems++;
         }
       }),
     );
-    return (checkedItems / numItems) * 100;
+    this.progress = checkedItems;
+    return checkedItems;
   }
 }
+
+export default List;

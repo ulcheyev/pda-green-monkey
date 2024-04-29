@@ -1,6 +1,34 @@
+import Item from "../model/Item";
+import List from "../model/List";
+import Shop from "../model/Shop";
+
 class DataManager {
   getTestData = () => {
-    return testData;
+    let dataList = testData.map((dataItem) => {
+      const l = new List(dataItem.name, dataItem.id);
+      l.shops = dataItem.shops.map((shopItem) => {
+        var s = new Shop(shopItem.name);
+        s.items = shopItem.items.map((itemItem) => {
+          var item = new Item(
+            itemItem.quantity,
+            itemItem.checked,
+            itemItem.measure,
+            itemItem.name,
+            itemItem.photo,
+          );
+          return item;
+        });
+        return s;
+      });
+      console.log(
+        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+      );
+      l.updateProgress();
+      return l;
+    });
+
+    console.log(dataList);
+    return dataList;
   };
   getTestNotifications = () => {
     return testNotifications;

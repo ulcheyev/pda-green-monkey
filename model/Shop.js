@@ -12,3 +12,5 @@ class Shop {
     this.items = this.items.filter((x) => x.id != item.id);
   }
 }
+
+export default Shop;
