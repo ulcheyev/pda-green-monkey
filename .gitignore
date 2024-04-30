@@ -68,6 +68,7 @@ buck-out
 .idea
 .gradle
 local.properties
+android
 *.iml
 /packages/react-native/android/*
 !/packages/react-native/android/README.md
@@ -79,6 +80,7 @@ node_modules
 package-lock.json
 
 # OS X
+ios
 .DS_Store
 
 # Test generated files
