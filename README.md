@@ -45,4 +45,11 @@ $ npx expo start
 
 ## For collaborators
 
-For accessing api keys you need to provide gpg key.
+1. Install gpg
+2. Provide gpg public key
+3. Install git crypt
+4. After fetching data / cloning repository use
+
+```shell
+$ git-crypt unlock
+```

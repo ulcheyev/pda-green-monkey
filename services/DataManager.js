@@ -10,7 +10,8 @@ import {
   updateProfile,
   signOut,
 } from "firebase/auth";
-import { auth } from "./firestore";
+import { auth, db } from "./firestore";
+import { collection, getDocs, getDoc } from "firebase/firestore";
 class DataManager {
   getTestData = () => {
     let dataList = testData.map((dataItem) => {
@@ -89,6 +90,39 @@ class DataManager {
   getCurrentUser() {
     const auth = getAuth();
     return auth.currentUser;
+  }
+
+  async getShop(listDocSnap) {
+    try {
+      const listData = listDocSnap.data();
+      if (listData && listData.shops) {
+        const shopsData = [];
+        for (const shopRef of listData.shops) {
+          const shopDocSnap = await getDoc(shopRef);
+          const shopData = shopDocSnap.data();
+          shopsData.push(shopData);
+        }
+        return shopsData;
+      } else {
+        console.log("No shops found in the list.");
+        return [];
+      }
+    } catch (error) {
+      console.error("Error getting shops from list:", error);
+      return [];
+    }
+  }
+  async getAllLists() {
+    const lists = [];
+    const listDocRef = await getDocs(collection(db, "lists"));
+    listDocRef.forEach((doc) => {
+      this.getShop(doc).then((res) => {
+        lists.push(doc.data());
+        console.log(lists);
+        console.log(lists[0].shops);
+      });
+    });
+    return lists;
   }
 }
 

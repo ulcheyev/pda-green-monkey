@@ -1,7 +1,7 @@
 import { Button, FAB, Text, TextInput, useTheme } from "react-native-paper";
 import ListCard from "../../components/ListCard";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import DataManager from "../../services/DataManager";
 import MonkeyModal from "../../components/MonkeyModal";
@@ -94,16 +94,9 @@ const ShoppingListsContent = (props) => {
     },
   });
 
-  const getLists = async () => {
-    // const querySnapshot = await getDocs(collection(db, "lists"));
-    // querySnapshot.forEach((doc) => {
-    //   console.log(`${doc.id} => ${doc.data()}`);
-    // });
-  };
-
   const fabOnPress = () => {
     setVisible(true);
-    getLists();
+    dataManager.getAllLists();
   };
 
   const hideModal = () => {
@@ -132,13 +125,14 @@ const ShoppingListsContent = (props) => {
 
   const onChangeCreationListName = (text) => setCreationListName(text);
 
+  useEffect(() => {}, []);
+
   return (
     <View style={styles.listsContainer}>
       <FlatList
         alwaysBounceVertical={false}
         data={lists}
         renderItem={(lizt) => {
-          //console.log(lizt)
           return (
             <ListCard
               list={lizt.item}
