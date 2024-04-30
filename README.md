@@ -42,3 +42,7 @@ $ npx expo start
      Then can scan the QR code in the Expo Developer Tools to run the application on your device.
    - Run on Android device/emulator
    - Run on iOS simulator
+
+## For collaborators
+
+For accessing api keys you need to provide gpg key.
