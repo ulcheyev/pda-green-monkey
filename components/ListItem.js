@@ -4,11 +4,12 @@ import { View } from "react-native";
 import DataManager from "../services/DataManager";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
+import useDataManager from "../services/DataManager";
 
 const ListItem = ({ item }) => {
   const theme = useTheme();
   const [checked, setChecked] = React.useState(item.item.checked);
-  const dataManager = new DataManager();
+  const dataManager = useDataManager();
   const styles = StyleSheet.create({
     itemCard: {
       borderRadius: 5,

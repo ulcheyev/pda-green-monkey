@@ -16,6 +16,7 @@ import MonkeyModal from "../../components/MonkeyModal";
 import DataManager from "../../services/DataManager";
 import { measure } from "react-native-reanimated";
 import { ScrollView } from "react-native-gesture-handler";
+import useDataManager from "../../services/DataManager";
 
 const ShoppingList = (props) => {
   const [visible, setVisible] = useState(false);
@@ -34,6 +35,7 @@ const ShoppingList = (props) => {
   const [unitError, setUnitError] = useState(false);
   const utils = useUtils();
   const theme = useTheme();
+  const dataManager = useDataManager();
 
   const units = ["g", "kg", "ml", "L", "pts"];
 
@@ -116,8 +118,6 @@ const ShoppingList = (props) => {
       color: theme.colors.primary,
     },
   });
-
-  const dataManager = new DataManager();
 
   const fabOnPress = () => {
     setVisible(true);

@@ -9,10 +9,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Header from "../../components/Header";
 import ShoppingList from "./ShoppingList";
 import useUtils from "../../utils/Utils";
+import { collection, getDocs } from "firebase/firestore";
+import db from "../../services/firestore";
+import useDataManager from "../../services/DataManager";
+import Register from "../user-related/Register";
+import Login from "../user-related/Login";
+import UserInfo from "../user-related/UserInfo";
 
 const ShoppingListsContent = (props) => {
   const [visible, setVisible] = useState(false);
-  const dataManager = new DataManager();
+  const dataManager = useDataManager();
   const utils = useUtils();
   const [lists, setLists] = useState(dataManager.getTestData());
   const [isError, setIsError] = useState(false);
@@ -88,8 +94,16 @@ const ShoppingListsContent = (props) => {
     },
   });
 
+  const getLists = async () => {
+    // const querySnapshot = await getDocs(collection(db, "lists"));
+    // querySnapshot.forEach((doc) => {
+    //   console.log(`${doc.id} => ${doc.data()}`);
+    // });
+  };
+
   const fabOnPress = () => {
     setVisible(true);
+    getLists();
   };
 
   const hideModal = () => {
@@ -192,6 +206,9 @@ const ShoppingLists = () => {
     >
       <Stack.Screen name="Lists" component={ShoppingListsContent} />
       <Stack.Screen name={"ShoppingList"} component={ShoppingList} />
+      <Stack.Screen name={"Register"} component={Register} />
+      <Stack.Screen name={"Login"} component={Login} />
+      <Stack.Screen name={"UserInfo"} component={UserInfo} />
     </Stack.Navigator>
   );
 };

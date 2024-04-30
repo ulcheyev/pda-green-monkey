@@ -10,6 +10,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-firebase/app": "^19.2.2",
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.1.17",

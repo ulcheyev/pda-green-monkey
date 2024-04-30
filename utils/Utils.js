@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-
+import { getAuth } from "firebase/auth";
 class Utils {
   getCurrentScreenName(navigation) {
     let state = navigation.getState();
@@ -13,6 +13,11 @@ class Utils {
       size += shop.items.length;
     }
     return size;
+  }
+
+  isAuthorized() {
+    const auth = getAuth();
+    return auth.currentUser != null;
   }
 }
 

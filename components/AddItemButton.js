@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
+import useDataManager from "../services/DataManager";
 
 const AddItemButton = (props) => {
-  dataManager = new DataManager();
+  const dataManager = useDataManager();
   const theme = useTheme();
   const styles = StyleSheet.create({
     itemCard: {

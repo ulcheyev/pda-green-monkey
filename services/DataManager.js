@@ -2,7 +2,15 @@ import Item from "../model/Item";
 import List from "../model/List";
 import Shop from "../model/Shop";
 import Notification from "../model/Notification";
-
+import { useMemo } from "react";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  signOut,
+} from "firebase/auth";
+import { auth } from "./firestore";
 class DataManager {
   getTestData = () => {
     let dataList = testData.map((dataItem) => {
@@ -54,9 +62,41 @@ class DataManager {
       return list;
     });
   };
+
+  register(user) {
+    return createUserWithEmailAndPassword(auth, user.email, user.password);
+  }
+
+  updateProfile(user, params) {
+    return updateProfile(user, params);
+  }
+
+  login(user) {
+    return signInWithEmailAndPassword(auth, user.email, user.password);
+  }
+
+  logout(navigation) {
+    signOut(auth)
+      .then(() => {
+        navigation.pop();
+        navigation.navigate("Login");
+      })
+      .catch((error) => {
+        // ignored
+      });
+  }
+
+  getCurrentUser() {
+    const auth = getAuth();
+    return auth.currentUser;
+  }
 }
 
-export default DataManager;
+const useDataManager = () => {
+  return useMemo(() => new DataManager(), []);
+};
+
+export default useDataManager;
 
 var testData = [
   {
