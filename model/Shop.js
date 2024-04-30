@@ -1,7 +1,7 @@
 class Shop {
-  constructor(name) {
+  constructor(name, items = []) {
     this.id;
-    this.items = [];
+    this.items = items;
     this.name = name;
   }
 

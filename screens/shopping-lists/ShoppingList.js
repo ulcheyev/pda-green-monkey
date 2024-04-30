@@ -3,19 +3,16 @@ import { FlatList, StyleSheet, View } from "react-native";
 import {
   Button,
   FAB,
-  TextInput,
-  useTheme,
   Icon,
   Text,
+  TextInput,
+  useTheme,
 } from "react-native-paper";
 import ProgressBar from "../../components/ProgressBar";
 import useUtils from "../../utils/Utils";
 import * as React from "react";
 import { useState } from "react";
 import MonkeyModal from "../../components/MonkeyModal";
-import DataManager from "../../services/DataManager";
-import { measure } from "react-native-reanimated";
-import { ScrollView } from "react-native-gesture-handler";
 import useDataManager from "../../services/DataManager";
 
 const ShoppingList = (props) => {

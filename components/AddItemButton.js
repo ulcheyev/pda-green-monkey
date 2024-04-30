@@ -1,13 +1,7 @@
-import DataManager from "../services/DataManager";
-import { View, Text } from "react-native";
-import { Card } from "react-native-paper";
-import { StyleSheet } from "react-native";
-import { useTheme } from "react-native-paper";
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
 import useDataManager from "../services/DataManager";
+import { StyleSheet, Text, View } from "react-native";
+import { Card, useTheme } from "react-native-paper";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 const AddItemButton = (props) => {
   const dataManager = useDataManager();

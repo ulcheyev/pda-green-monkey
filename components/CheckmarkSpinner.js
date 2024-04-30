@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Animated, Easing, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Animated, Easing, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native-paper";
 
@@ -7,8 +7,8 @@ const CheckmarkSpinner = ({
   loading,
   showErrormark,
   showCheckmark,
-  size,
-  color,
+  size = 50,
+  color = "#007bff",
 }) => {
   const [spinAnim] = useState(new Animated.Value(0));
 
@@ -40,6 +40,7 @@ const CheckmarkSpinner = ({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },

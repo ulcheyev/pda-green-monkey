@@ -23,9 +23,11 @@ const Header = ({ navigation, back }) => {
   };
 
   const accountPress = () => {
-    utils.isAuthorized()
-      ? navigation.navigate("UserInfo")
-      : navigation.navigate("Login");
+    utils
+      .checkAuth()
+      .then((user) =>
+        user ? navigation.navigate("UserInfo") : navigation.navigate("Login"),
+      );
   };
 
   return (

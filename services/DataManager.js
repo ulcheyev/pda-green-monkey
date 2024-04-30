@@ -4,14 +4,22 @@ import Shop from "../model/Shop";
 import Notification from "../model/Notification";
 import { useMemo } from "react";
 import {
-  getAuth,
   createUserWithEmailAndPassword,
+  getAuth,
   signInWithEmailAndPassword,
-  updateProfile,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 import { auth, db } from "./firestore";
-import { collection, getDocs, getDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+
 class DataManager {
   getTestData = () => {
     let dataList = testData.map((dataItem) => {
@@ -92,17 +100,36 @@ class DataManager {
     return auth.currentUser;
   }
 
-  async getShop(listDocSnap) {
+  async getShopItems(shopDocSnap) {
+    try {
+      const shopData = shopDocSnap.data();
+      if (shopData && shopData.items) {
+        const itemsData = [];
+        const promises = shopData.items.map((itemRef) => {
+          return getDoc(itemRef).then((res) => res.data());
+        });
+        return await Promise.all(promises);
+      } else {
+        console.log("No items found in the shop.");
+        return [];
+      }
+    } catch (error) {
+      console.error("Error getting items from shop:", error);
+      return [];
+    }
+  }
+
+  async getListShops(listDocSnap) {
     try {
       const listData = listDocSnap.data();
       if (listData && listData.shops) {
-        const shopsData = [];
-        for (const shopRef of listData.shops) {
-          const shopDocSnap = await getDoc(shopRef);
-          const shopData = shopDocSnap.data();
-          shopsData.push(shopData);
-        }
-        return shopsData;
+        const promises = listData.shops.map((shopRef) => {
+          return getDoc(shopRef).then(async (res) => {
+            const items = await this.getShopItems(res);
+            return { ...res.data(), items };
+          });
+        });
+        return Promise.all(promises);
       } else {
         console.log("No shops found in the list.");
         return [];
@@ -114,15 +141,29 @@ class DataManager {
   }
   async getAllLists() {
     const lists = [];
-    const listDocRef = await getDocs(collection(db, "lists"));
+    const q = query(
+      collection(db, "lists"),
+      where("uid", "==", this.getCurrentUser().uid),
+    );
+    const listDocRef = await getDocs(q);
+    const shopsPromises = [];
     listDocRef.forEach((doc) => {
-      this.getShop(doc).then((res) => {
-        lists.push(doc.data());
-        console.log(lists);
-        console.log(lists[0].shops);
+      const promise = this.getListShops(doc).then((shopsData) => {
+        return { ...doc.data(), shops: shopsData };
       });
+      shopsPromises.push(promise);
     });
-    return lists;
+
+    return await Promise.all(shopsPromises);
+  }
+
+  async saveList(list) {
+    try {
+      const listRef = await addDoc(collection(db, "lists"), list);
+      return listRef.id;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

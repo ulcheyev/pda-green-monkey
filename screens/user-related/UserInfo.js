@@ -2,11 +2,13 @@ import { StyleSheet, View } from "react-native";
 import { Button, Text, useTheme } from "react-native-paper";
 import useDataManager from "../../services/DataManager";
 import { useRef } from "react";
+import { useChanges } from "../../services/ChangesProvider";
 
 const UserInfo = (props) => {
   const theme = useTheme();
   const dataManager = useDataManager();
   const userRef = useRef(dataManager.getCurrentUser());
+  const changesProvider = useChanges();
   const styles = StyleSheet.create({
     mainContainer: {
       display: "flex",
@@ -23,6 +25,7 @@ const UserInfo = (props) => {
   });
   const handleLogOut = () => {
     dataManager.logout(props.navigation);
+    changesProvider.setLists([]);
   };
   return (
     <View style={styles.mainContainer}>

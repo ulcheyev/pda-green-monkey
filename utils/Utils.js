@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { getAuth } from "firebase/auth";
+import { auth } from "../services/firestore";
+
 class Utils {
   getCurrentScreenName(navigation) {
     let state = navigation.getState();
@@ -15,9 +16,18 @@ class Utils {
     return size;
   }
 
-  isAuthorized() {
-    const auth = getAuth();
-    return auth.currentUser != null;
+  checkAuth() {
+    return new Promise((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(
+        (user) => {
+          unsubscribe();
+          resolve(user);
+        },
+        (error) => {
+          reject(error);
+        },
+      );
+    });
   }
 }
 

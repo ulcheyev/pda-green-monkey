@@ -1,10 +1,8 @@
-import { StyleSheet } from "react-native";
-import { Card, useTheme, Text, Avatar, Icon } from "react-native-paper";
-import { View } from "react-native";
-import DataManager from "../services/DataManager";
+import { StyleSheet, View } from "react-native";
+import { Avatar, Card, Icon, Text, useTheme } from "react-native-paper";
+import useDataManager from "../services/DataManager";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
-import useDataManager from "../services/DataManager";
 
 const ListItem = ({ item }) => {
   const theme = useTheme();

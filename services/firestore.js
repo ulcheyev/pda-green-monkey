@@ -1,14 +1,14 @@
-import firebase from "firebase/compat/app";
 import "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import config from "./config.json";
 import {
   getAuth,
-  initializeAuth,
   getReactNativePersistence,
+  initializeAuth,
 } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+
 const getConfig = () => {
   return {
     apiKey: config.apiKey,

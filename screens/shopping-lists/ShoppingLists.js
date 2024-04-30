@@ -1,28 +1,31 @@
 import { Button, FAB, Text, TextInput, useTheme } from "react-native-paper";
 import ListCard from "../../components/ListCard";
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
-import DataManager from "../../services/DataManager";
+import { useState } from "react";
+import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import useDataManager from "../../services/DataManager";
 import MonkeyModal from "../../components/MonkeyModal";
 import { createStackNavigator } from "@react-navigation/stack";
 import Header from "../../components/Header";
 import ShoppingList from "./ShoppingList";
 import useUtils from "../../utils/Utils";
-import { collection, getDocs } from "firebase/firestore";
-import db from "../../services/firestore";
-import useDataManager from "../../services/DataManager";
 import Register from "../user-related/Register";
 import Login from "../user-related/Login";
 import UserInfo from "../user-related/UserInfo";
+import CheckmarkSpinner from "../../components/CheckmarkSpinner";
+import { useChanges } from "../../services/ChangesProvider";
+import { useFocusEffect } from "@react-navigation/native";
 
 const ShoppingListsContent = (props) => {
   const [visible, setVisible] = useState(false);
   const dataManager = useDataManager();
+  const changesProvider = useChanges();
   const utils = useUtils();
-  const [lists, setLists] = useState(dataManager.getTestData());
+  const [lists, setLists] = useState([]);
   const [isError, setIsError] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [creationListName, setCreationListName] = React.useState("");
+  const [loading, setLoading] = useState(false);
   const theme = useTheme();
   const styles = StyleSheet.create({
     listsContainer: {
@@ -89,6 +92,14 @@ const ShoppingListsContent = (props) => {
       marginTop: 10,
     },
 
+    emptyListContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      width: "100%",
+    },
     templateButtonTitleStyle: {
       color: "#565555",
     },
@@ -96,7 +107,22 @@ const ShoppingListsContent = (props) => {
 
   const fabOnPress = () => {
     setVisible(true);
-    dataManager.getAllLists();
+  };
+
+  // todo kyrya
+  const handleRefresh = () => {
+    setRefreshing(true);
+    utils.checkAuth().then((user) => {
+      if (user) {
+        dataManager.getAllLists().then((res) => {
+          setLists(res);
+          setRefreshing(false);
+        });
+      } else {
+        setRefreshing(false);
+        setLists([]);
+      }
+    });
   };
 
   const hideModal = () => {
@@ -116,35 +142,68 @@ const ShoppingListsContent = (props) => {
       isTemplate: false,
       progress: 0,
       shops: [],
+      uid: dataManager.getCurrentUser().uid,
     };
-    setLists([...lists, newList]);
-    setVisible(false);
-    setCreationListName("");
-    setIsError(false);
+    dataManager
+      .saveList(newList)
+      .then(() => {
+        setLists([...lists, newList]);
+      })
+      .finally(() => {
+        setVisible(false);
+        setCreationListName("");
+        setIsError(false);
+      });
   };
 
   const onChangeCreationListName = (text) => setCreationListName(text);
 
-  useEffect(() => {}, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
+      utils.checkAuth().then((user) => {
+        if (user) {
+          dataManager.getAllLists().then((res) => {
+            setLists(res);
+            setLoading(false);
+          });
+        } else {
+          setLoading(false);
+          console.log("User is not authenticated");
+        }
+      }, []);
+    }, []),
+  );
 
-  return (
+  return loading ? (
+    <CheckmarkSpinner loading={loading} />
+  ) : (
     <View style={styles.listsContainer}>
-      <FlatList
-        alwaysBounceVertical={false}
-        data={lists}
-        renderItem={(lizt) => {
-          return (
-            <ListCard
-              list={lizt.item}
-              progress={{
-                value: lizt.item.progress,
-                overall: utils.getListItemsSize(lizt.item),
-              }}
-              navigation={props.navigation}
-            />
-          );
-        }}
-      ></FlatList>
+      {lists && lists.length > 0 ? (
+        <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+          alwaysBounceVertical={false}
+          data={lists}
+          renderItem={(lizt) => {
+            return (
+              <ListCard
+                list={lizt.item}
+                progress={{
+                  value: lizt.item.progress,
+                  overall: utils.getListItemsSize(lizt.item),
+                }}
+                navigation={props.navigation}
+              />
+            );
+          }}
+        ></FlatList>
+      ) : (
+        <View style={styles.emptyListContainer}>
+          <Text variant={"bodyLarge"}>Try to create a list :)</Text>
+        </View>
+      )}
       <FAB
         icon="pencil"
         color={theme.colors.tertiary}

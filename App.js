@@ -4,13 +4,16 @@ import "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 import useTheme from "./styles/AppTheme";
 import AppDrawer from "./components/AppDrawer";
+import ChangesProvider from "./services/ChangesProvider";
 
 function App() {
   const theme = useTheme();
   return (
     <NavigationContainer>
       <PaperProvider theme={theme}>
-        <AppDrawer />
+        <ChangesProvider>
+          <AppDrawer />
+        </ChangesProvider>
       </PaperProvider>
     </NavigationContainer>
   );
