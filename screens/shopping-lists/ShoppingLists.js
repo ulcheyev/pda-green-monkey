@@ -124,6 +124,7 @@ const ShoppingListsContent = (props) => {
         alwaysBounceVertical={false}
         data={lists}
         renderItem={(lizt) => {
+          //console.log(lizt)
           return (
             <ListCard
               list={lizt.item}
