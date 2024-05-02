@@ -7,6 +7,19 @@ class Item {
     this.name = name;
     this.photo = photo;
   }
+
+  static schema = {
+    name: "Item",
+    propeties: {
+      name: { type: "string" },
+      id: { type: "ObjectID" },
+      quantity: { type: "float" },
+      checked: { type: "bool" },
+      measure: { type: "string" },
+      photo: { type: "string" },
+    },
+    primaryKey: "id",
+  };
 }
 
 export default Item;

@@ -119,8 +119,9 @@ const ShoppingListsContent = (props) => {
           setRefreshing(false);
         });
       } else {
+        console.log("Not user");
+        dataManager.getListsLocal().then((r) => setLists(r));
         setRefreshing(false);
-        setLists([]);
       }
     });
   };
@@ -136,24 +137,39 @@ const ShoppingListsContent = (props) => {
       setIsError(true);
       return;
     }
-    const newList = {
-      id: lists.length + 1,
-      name: creationListName,
-      isTemplate: false,
-      progress: 0,
-      shops: [],
-      uid: dataManager.getCurrentUser().uid,
-    };
-    dataManager
-      .saveList(newList)
-      .then(() => {
-        setLists([...lists, newList]);
-      })
-      .finally(() => {
-        setVisible(false);
-        setCreationListName("");
-        setIsError(false);
-      });
+
+    utils.checkAuth().then((user) => {
+      if (user) {
+        const newList = {
+          id: lists.length + 1,
+          name: creationListName,
+          isTemplate: false,
+          progress: 0,
+          shops: [],
+          uid: dataManager.getCurrentUser().uid,
+        };
+        dataManager
+          .saveList(newList)
+          .then(() => {
+            setLists([...lists, newList]);
+          })
+          .finally(() => {
+            setVisible(false);
+            setCreationListName("");
+            setIsError(false);
+          });
+      } else {
+        console.log("Creating list");
+        dataManager
+          .saveListLocal(creationListName)
+          .then(() => handleRefresh())
+          .finally(() => {
+            setVisible(false);
+            setCreationListName("");
+            setIsError(false);
+          });
+      }
+    });
   };
 
   const onChangeCreationListName = (text) => setCreationListName(text);
@@ -168,6 +184,15 @@ const ShoppingListsContent = (props) => {
             setLoading(false);
           });
         } else {
+          dataManager
+            .getListsLocal()
+            .then((r) => {
+              console.log("Got result");
+              console.log(r);
+              setLists(r);
+            })
+            .catch((e) => console.error(e));
+
           setLoading(false);
           console.log("User is not authenticated");
         }

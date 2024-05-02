@@ -19,8 +19,13 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import LocalDB from "./LocalDB";
 
 class DataManager {
+  constructor() {
+    this.localdb = new LocalDB();
+  }
+
   getTestData = () => {
     let dataList = testData.map((dataItem) => {
       const l = new List(dataItem.name, dataItem.id);
@@ -157,6 +162,19 @@ class DataManager {
     return await Promise.all(shopsPromises);
   }
 
+  convertToLists = (res) => {
+    console.log(res.rows._array);
+    return res.rows._array.map((item) => new List(item.name, item.id));
+  };
+
+  async getListsLocal() {
+    return this.localdb.getListItems().then((res) => this.convertToLists(res));
+  }
+
+  async getShopsLocal(id) {
+    return this.localdb.getShops(id).then((res) => this.convertToShops(res));
+  }
+
   async saveList(list) {
     try {
       const listRef = await addDoc(collection(db, "lists"), list);
@@ -164,6 +182,14 @@ class DataManager {
     } catch (error) {
       throw error;
     }
+  }
+
+  async saveListLocal(name) {
+    return this.localdb.createList(name);
+  }
+
+  async saveShopLocal(name, listId) {
+    return this.localdb.createShop(listId, name);
   }
 }
 
