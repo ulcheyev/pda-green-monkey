@@ -167,8 +167,36 @@ class DataManager {
     return res.rows._array.map((item) => new List(item.name, item.id));
   };
 
+  convertToShops(shop) {
+    let shops = [];
+    console.log(shop);
+
+    for (i = 0; i < shop.rows._array.length; ++i) {
+      s = shop.rows._array[i];
+      lists = [];
+      //let lists = await this.getShopItemsLocal(s.id).then(item => this.convertToItem(item));
+      let shop_obj = new Shop(s.name, lists);
+      shops.push(shop_obj);
+      console.log(s);
+    }
+
+    return shops;
+  }
+
+  async convertToItem(itemSQL) {
+    return itemSQL.rows._array.map((item) => {
+      return new Item(item.amount, item, checked, item.name, item.photo);
+    });
+  }
+
   async getListsLocal() {
     return this.localdb.getListItems().then((res) => this.convertToLists(res));
+  }
+
+  async getShopItemsLocal(shopId) {
+    return this.localdb
+      .getShopItems(shopId)
+      .then((res) => this.convertToItem(res));
   }
 
   async getShopsLocal(id) {
@@ -189,6 +217,7 @@ class DataManager {
   }
 
   async saveShopLocal(name, listId) {
+    console.log("Creating sshop local");
     return this.localdb.createShop(listId, name);
   }
 }

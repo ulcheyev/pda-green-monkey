@@ -11,7 +11,7 @@ import {
 import ProgressBar from "../../components/ProgressBar";
 import useUtils from "../../utils/Utils";
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MonkeyModal from "../../components/MonkeyModal";
 import useDataManager from "../../services/DataManager";
 
@@ -35,6 +35,20 @@ const ShoppingList = (props) => {
   const dataManager = useDataManager();
 
   const units = ["g", "kg", "ml", "L", "pts"];
+
+  useEffect(() => {
+    utils.checkAuth().then((user) => {
+      if (user) {
+        console.log("User is online");
+      } else {
+        console.log("Getting shops local");
+        dataManager.getShopsLocal(props.route.params.list.id).then((res) => {
+          console.log("Got shops");
+          setShops(res);
+        });
+      }
+    });
+  }, [props.route]);
 
   const styles = StyleSheet.create({
     shopCardContainer: {
@@ -153,6 +167,16 @@ const ShoppingList = (props) => {
       name: addShopName,
       items: [],
     };
+    utils.checkAuth().then((user) => {
+      if (!user) {
+        console.log("Adding shop local");
+        dataManager
+          .saveShopLocal(newShop.name, props.route.params.list.id)
+          .then(() => console.log("aaaa"))
+          .catch((e) => console.error(e))
+          .finally(() => console.log("Help me"));
+      }
+    });
     setAddShopName("");
     setIsError(false);
     setShops([...shops, newShop]);
