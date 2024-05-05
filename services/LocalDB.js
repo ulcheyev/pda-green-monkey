@@ -119,24 +119,29 @@ class LocalDB {
     console.log("db is creating");
     console.log(`id is ${id} ${name}`);
 
-    return new Promise((resolve, reject) => {
-      this.localdatabase.transaction((tx) => {
-        console.log("entered transaction");
+    console.log(this.localdatabase);
+    try {
+      await new Promise((resolve, reject) => {
+        this.localdatabase.transaction((tx) => {
+          console.log("entered transaction");
 
-        tx.executeSql(
-          "INSERT INTO Shops (name, listId) VALUES (?, ?)",
-          [name, id],
-          (txObj, result) => {
-            console.log("OK");
-            //resolve(result);
-          },
-          (txObj, error) => {
-            console.error("Error", error);
-            //reject(error);
-          },
-        );
+          tx.executeSql(
+            "INSERT INTO Shops (name, listId) VALUES (?, ?)",
+            [name, id],
+            (txObj, result) => {
+              console.log("OK");
+              resolve(result);
+            },
+            (txObj, error) => {
+              console.error("Error", error);
+              reject(error);
+            },
+          );
+        });
       });
-    });
+    } catch (e) {
+      console.error("Failed to create shop:", e);
+    }
   };
 
   createList = async (name) => {

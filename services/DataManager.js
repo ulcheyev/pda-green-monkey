@@ -171,13 +171,13 @@ class DataManager {
     let shops = [];
     console.log(shop);
 
-    for (i = 0; i < shop.rows._array.length; ++i) {
-      s = shop.rows._array[i];
-      lists = [];
+    for (let i = 0; i < shop.rows._array.length; ++i) {
+      let s = shop.rows._array[i];
+      let lists = [];
       //let lists = await this.getShopItemsLocal(s.id).then(item => this.convertToItem(item));
       let shop_obj = new Shop(s.name, lists);
       shops.push(shop_obj);
-      console.log(s);
+      console.log("mmmm", s);
     }
 
     return shops;
@@ -217,7 +217,6 @@ class DataManager {
   }
 
   async saveShopLocal(name, listId) {
-    console.log("Creating sshop local");
     return this.localdb.createShop(listId, name);
   }
 }
