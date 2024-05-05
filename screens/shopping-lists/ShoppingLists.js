@@ -15,9 +15,11 @@ import UserInfo from "../user-related/UserInfo";
 import CheckmarkSpinner from "../../components/CheckmarkSpinner";
 import { useChanges } from "../../services/ChangesProvider";
 import { useFocusEffect } from "@react-navigation/native";
+import { SwipeListView } from "react-native-swipe-list-view";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ShoppingListsContent = (props) => {
-  const [visible, setVisible] = useState(false);
+  const [addListModalVisible, setAddListModalVisible] = useState(false);
   const dataManager = useDataManager();
   const changesProvider = useChanges();
   const utils = useUtils();
@@ -103,10 +105,40 @@ const ShoppingListsContent = (props) => {
     templateButtonTitleStyle: {
       color: "#565555",
     },
+    rowBack: {
+      alignItems: "center",
+      backgroundColor: "red",
+      margin: 7,
+      flex: 1,
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      paddingLeft: 15,
+      borderRadius: 7,
+    },
+    backRightBtn: {
+      alignItems: "center",
+      bottom: 0,
+      justifyContent: "flex-end",
+      top: 0,
+      width: 75,
+      borderBottomRightRadius: 7,
+      borderTopRightRadius: 7,
+    },
+    backRightBtnRight: {
+      backgroundColor: "red",
+      flex: 1,
+      height: "100%",
+      flexDirection: "column",
+      justifyContent: "center",
+      right: 0,
+    },
+    backTextWhite: {
+      color: "#FFF",
+    },
   });
 
   const fabOnPress = () => {
-    setVisible(true);
+    setAddListModalVisible(true);
   };
 
   // todo kyrya
@@ -125,8 +157,8 @@ const ShoppingListsContent = (props) => {
     });
   };
 
-  const hideModal = () => {
-    setVisible(false);
+  const hideAddItemModal = () => {
+    setAddListModalVisible(false);
     setCreationListName("");
     setIsError(false);
   };
@@ -150,7 +182,7 @@ const ShoppingListsContent = (props) => {
         setLists([...lists, newList]);
       })
       .finally(() => {
-        setVisible(false);
+        setAddListModalVisible(false);
         setCreationListName("");
         setIsError(false);
       });
@@ -175,30 +207,47 @@ const ShoppingListsContent = (props) => {
     }, []),
   );
 
+  const handleDelete = (item) => {
+    dataManager.deleteList(item).then((r) => handleRefresh());
+  };
+
+  const renderHiddenItem = (data) => (
+    <View style={styles.rowBack}>
+      <TouchableOpacity
+        style={[styles.backRightBtn, styles.backRightBtnRight]}
+        onPress={() => handleDelete(data.item)}
+      >
+        <Text style={styles.backTextWhite}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return loading ? (
     <CheckmarkSpinner loading={loading} />
   ) : (
     <View style={styles.listsContainer}>
       {lists && lists.length > 0 ? (
-        <FlatList
+        <SwipeListView
+          data={lists}
+          disableRightSwipe={true}
+          renderItem={(lizt) => (
+            <ListCard
+              handleRefresh={handleRefresh}
+              list={lizt.item}
+              progress={{
+                value: lizt.item.progress,
+                overall: utils.getListItemsSize(lizt.item),
+              }}
+              navigation={props.navigation}
+            />
+          )}
+          renderHiddenItem={renderHiddenItem}
+          rightOpenValue={-75}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
           alwaysBounceVertical={false}
-          data={lists}
-          renderItem={(lizt) => {
-            return (
-              <ListCard
-                list={lizt.item}
-                progress={{
-                  value: lizt.item.progress,
-                  overall: utils.getListItemsSize(lizt.item),
-                }}
-                navigation={props.navigation}
-              />
-            );
-          }}
-        ></FlatList>
+        />
       ) : (
         <View style={styles.emptyListContainer}>
           <Text variant={"bodyLarge"}>Try to create a list :)</Text>
@@ -211,8 +260,8 @@ const ShoppingListsContent = (props) => {
         onPress={fabOnPress}
       />
       <MonkeyModal
-        visible={visible}
-        hideModal={hideModal}
+        visible={addListModalVisible}
+        hideModal={hideAddItemModal}
         modalContentStyle={styles.modalContentStyle}
         modalContainerStyle={styles.modalContainer}
         title={"Create a list"}
