@@ -187,7 +187,7 @@ const ShoppingListsContent = (props) => {
             setIsError(false);
           });
 
-        dataManager.saveShopLocal("gorillaz", 1);
+        //dataManager.saveShopLocal("gorillaz", 1);
       }
     });
   };

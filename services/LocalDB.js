@@ -4,7 +4,7 @@ import * as FileSystem from "expo-file-system";
 class LocalDB {
   constructor() {
     //FileSystem.deleteAsync(`${FileSystem.documentDirectory}/SQLite/pda-green-monkey.db`).then( () =>
-    this.localdatabase = SQLite.openDatabase("pda-green-monkey.db");
+    this.localdatabase = SQLite.openDatabase("pdagreenmonkey.db");
 
     this.createTables().then(() => console.log("Created tables"));
     //this.localdatabase = SQLite.openDatabase("pda-green-monkey.db");
@@ -31,6 +31,7 @@ class LocalDB {
         name TEXT,
         listId INTEGER,
         FOREIGN KEY (listId) REFERENCES lists(id)
+
      )
     `;
 
@@ -52,7 +53,7 @@ class LocalDB {
           listQuery,
           null,
           (tx, r) => {
-            //console.log("Created list table");
+            console.log("Created list table");
           },
           console.error,
         );
@@ -60,7 +61,7 @@ class LocalDB {
           itemsQuery,
           null,
           (tx, r) => {
-            //console.log("Created items table");
+            console.log("Created items table");
           },
           console.error,
         );
@@ -68,7 +69,7 @@ class LocalDB {
           shopsQuery,
           null,
           (tx, r) => {
-            //console.log("Created shops table");
+            console.log("Created shops table");
           },
           console.error,
         );
@@ -118,21 +119,19 @@ class LocalDB {
   createShop = async (id, name) => {
     console.log("db is creating");
     console.log(`id is ${id} ${name}`);
-
     return new Promise((resolve, reject) => {
       this.localdatabase.transaction((tx) => {
         console.log("entered transaction");
-
         tx.executeSql(
           "INSERT INTO Shops (name, listId) VALUES (?, ?)",
           [name, id],
           (txObj, result) => {
             console.log("OK");
-            //resolve(result);
+            resolve(result);
           },
           (txObj, error) => {
             console.error("Error", error);
-            //reject(error);
+            reject(error);
           },
         );
       });
@@ -151,6 +150,7 @@ class LocalDB {
           },
           console.error,
         );
+        console.log(tx);
       }),
     );
   };
