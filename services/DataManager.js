@@ -179,15 +179,18 @@ class DataManager {
     return res.rows._array.map((item) => new List(item.name, item.id));
   };
 
-  convertToShops(shop) {
+  async convertToShops(shop) {
     let shops = [];
-    console.log(shop);
 
-    for (let i = 0; i < shop.rows._array.length; ++i) {
+    console.log("Started converting");
+    for (let i = 0; i < shop.rows.length; ++i) {
       let s = shop.rows._array[i];
-      let lists = [];
-      //let lists = await this.getShopItemsLocal(s.id).then(item => this.convertToItem(item));
+      let lists = await this.getShopItemsLocal(s.id);
+      console.log("Got lists");
       let shop_obj = new Shop(s.name, lists);
+      shop_obj.id = s.id;
+      console.log("Shop is");
+      console.log(shop_obj);
       shops.push(shop_obj);
       console.log(s);
     }
@@ -195,8 +198,11 @@ class DataManager {
     return shops;
   }
 
-  async convertToItem(itemSQL) {
+  convertToItem(itemSQL) {
+    console.log("Converting to items");
     return itemSQL.rows._array.map((item) => {
+      console.log(item);
+      console.log("Item is");
       return new Item(item.amount, item, checked, item.name, item.photo);
     });
   }
@@ -206,6 +212,7 @@ class DataManager {
   }
 
   async getShopItemsLocal(shopId) {
+    console.log(`Getting items for shop ${shopId}`);
     return this.localdb
       .getShopItems(shopId)
       .then((res) => this.convertToItem(res));
@@ -222,6 +229,19 @@ class DataManager {
     } catch (error) {
       throw error;
     }
+  }
+
+  async saveItemLocal(name, price, quantity, checked, measure, shopId, photo) {
+    console.log("DM works");
+    return this.localdb.saveItem(
+      name,
+      price,
+      quantity,
+      checked,
+      measure,
+      shopId,
+      photo,
+    );
   }
 
   async saveListLocal(name) {

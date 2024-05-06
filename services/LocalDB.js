@@ -16,6 +16,7 @@ class LocalDB {
     const itemsQuery = `
       CREATE TABLE IF NOT EXISTS Items (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
+          price REAL,
           quantity REAL,
           checked INTEGER,
           measure TEXT,
@@ -88,13 +89,18 @@ class LocalDB {
     );
   };
 
-  getItems = async (shopId) => {
+  getShopItems = async (shopId) => {
     return new Promise((resolve, reject) => {
       this.localdatabase.transaction((tx) => {
         tx.executeSql(
           "SELECT * FROM Items WHERE shopId = ?",
           [shopId],
-          (txObj, result) => resolve(result),
+          (txObj, result) => {
+            console.log("Got items");
+            console.log(result);
+            resolve(result);
+          },
+          console.error,
         );
       });
     });
@@ -107,6 +113,7 @@ class LocalDB {
           "SELECT * FROM Shops WHERE listId = ?",
           [listId],
           (txObt, result) => {
+            console.log("Got shops");
             console.log(result);
             resolve(result);
           },
@@ -146,6 +153,32 @@ class LocalDB {
           "INSERT INTO Lists (name) VALUES (?)",
           [name],
           (txObt, result) => {
+            resolve(result);
+          },
+          console.error,
+        );
+        console.log(tx);
+      }),
+    );
+  };
+
+  saveItem = async (
+    name,
+    price,
+    quantity,
+    checked,
+    measure,
+    shopId,
+    photo = "",
+  ) => {
+    console.log("saving item");
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          "INSERT INTO Items (name, price, quantity, checked, measure, shopId, photo) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          [name, price, quantity, checked, measure, shopId, photo],
+          (txObt, result) => {
+            console.log("Added item :)");
             resolve(result);
           },
           console.error,

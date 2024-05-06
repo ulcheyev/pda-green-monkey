@@ -18,11 +18,12 @@ import useDataManager from "../../services/DataManager";
 const ShoppingList = (props) => {
   const [visible, setVisible] = useState(false);
   const [addShopName, setAddShopName] = React.useState("");
+  const [shopToAddId, setShopToAddId] = React.useState("");
   const [isError, setIsError] = useState(false);
   const [shops, setShops] = useState(props.route.params.list.shops);
   const [shopToAddItem, setShopToAddItem] = useState("");
   const [addItemName, setAddItemName] = useState("");
-  const [addItemPrice, setAddItemPrice] = useState("");
+  const [addItemPrice, setAddItemPrice] = useState("0");
   const [addItemQuantity, setAddItemQuantity] = useState("1");
   const [addItemUnit, setAddItemUnit] = useState("pts");
   const [addItemModalVisible, setAddItemModalVisible] = useState(false);
@@ -44,7 +45,8 @@ const ShoppingList = (props) => {
         console.log("Getting shops local");
         dataManager.getShopsLocal(props.route.params.list.id).then((res) => {
           console.log("Got shops");
-          setShops(res);
+          //console.log(res);
+          res.then((r) => setShops(r));
         });
       }
     });
@@ -143,6 +145,7 @@ const ShoppingList = (props) => {
   const hideAddItemModal = () => {
     setAddItemModalVisible(false);
     setShopToAddItem("");
+    setShopToAddId(0);
     setAddItemUnit("pts"), setAddItemQuantity("1");
     setAddItemPrice("");
     setAddItemName("");
@@ -153,8 +156,10 @@ const ShoppingList = (props) => {
   };
 
   const openAddItemModal = (shop) => {
+    console.log(shop);
     setAddItemModalVisible(true);
     setShopToAddItem(shop.name);
+    setShopToAddId(shop.id);
     //console.log(`Adding item to shop ${shop.name}`);
   };
 
@@ -224,17 +229,34 @@ const ShoppingList = (props) => {
       console.log(addItemName);
       hideAddItemModal();
       //{ id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 2 }
-      dataManager.addItemToShopInListId(
-        shopToAddItem,
-        props.route.params.list.id,
-        {
-          id: 12312,
-          name: addItemName,
-          measure: addItemUnit,
-          checked: false,
-          quantity: addItemQuantity,
-        },
-      );
+      utils.checkAuth().then((user) => {
+        if (user) {
+          dataManager.addItemToShopInListId(
+            shopToAddItem,
+            props.route.params.list.id,
+            {
+              id: 12312,
+              name: addItemName,
+              measure: addItemUnit,
+              checked: false,
+              quantity: addItemQuantity,
+            },
+          );
+        } else {
+          console.log("Adding local");
+          dataManager
+            .saveItemLocal(
+              addItemName,
+              addItemPrice,
+              addItemQuantity,
+              false,
+              addItemUnit,
+              shopToAddId,
+              "",
+            )
+            .then(() => console.log("Added item"));
+        }
+      });
     }
   };
 
@@ -265,6 +287,7 @@ const ShoppingList = (props) => {
             return (
               <ShopCard
                 shop={shop.item}
+                id={shop.item.id}
                 listProgress={props.route.params.list.progress}
                 addItem={openAddItemModal}
               />
