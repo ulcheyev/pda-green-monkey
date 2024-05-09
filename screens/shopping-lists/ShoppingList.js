@@ -49,7 +49,6 @@ const ShoppingList = (props) => {
         console.log("Getting shops local");
         dataManager.getShopsLocal(props.route.params.list.id).then((res) => {
           console.log("Got shops");
-          console.log(res);
           setShops(res);
         });
       }

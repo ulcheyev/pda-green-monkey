@@ -97,7 +97,6 @@ class LocalDB {
           [shopId],
           (txObj, result) => {
             console.log("Got items");
-            console.log(result);
             resolve(result);
           },
           console.error,
@@ -114,7 +113,6 @@ class LocalDB {
           [listId],
           (txObt, result) => {
             console.log("Got shops localDB");
-            console.log(result);
             resolve(result);
           },
           console.error,
@@ -157,7 +155,6 @@ class LocalDB {
           },
           console.error,
         );
-        console.log(tx);
       }),
     );
   };
@@ -174,7 +171,6 @@ class LocalDB {
           },
           console.error,
         );
-        console.log(tx);
       }),
     );
   };
@@ -200,7 +196,6 @@ class LocalDB {
           },
           console.error,
         );
-        console.log(tx);
       }),
     );
   };
@@ -217,7 +212,6 @@ class LocalDB {
           },
           console.error,
         );
-        console.log(tx);
       }),
     );
   };

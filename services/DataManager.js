@@ -69,26 +69,26 @@ class DataManager {
         new Notification(notificationItem.detailedText, notificationItem.name),
     );
   };
-  changeTestNotificationCheckedById = (id) => {
-    testNotifications = testNotifications.map((item) => {
-      if (item.id == id) {
-        item.checked = !item.checked;
-      }
-      return item;
-    });
-  };
-  addItemToShopInListId = (shop, listId, item) => {
-    testData = testData.map((list) => {
-      if (list.id == listId) {
-        list.shop = list.shops.map((shop) => {
-          if (shop.name == shop) {
-            shop.items.push(item);
-          }
-        });
-      }
-      return list;
-    });
-  };
+  // changeTestNotificationCheckedById = (id) => {
+  //   testNotifications = testNotifications.map((item) => {
+  //     if (item.id == id) {
+  //       item.checked = !item.checked;
+  //     }
+  //     return item;
+  //   });
+  // };
+  // addItemToShopInListId = (shop, listId, item) => {
+  //   testData = testData.map((list) => {
+  //     if (list.id == listId) {
+  //       list.shop = list.shops.map((shop) => {
+  //         if (shop.name == shop) {
+  //           shop.items.push(item);
+  //         }
+  //       });
+  //     }
+  //     return list;
+  //   });
+  // };
 
   register(user) {
     return createUserWithEmailAndPassword(auth, user.email, user.password);
@@ -176,7 +176,6 @@ class DataManager {
   }
 
   convertToLists = (res) => {
-    console.log(res.rows._array);
     return res.rows._array.map((item) => new List(item.name, item.id));
   };
 
@@ -187,13 +186,9 @@ class DataManager {
     for (let i = 0; i < shop.rows.length; ++i) {
       let s = shop.rows._array[i];
       let lists = await this.getShopItemsLocal(s.id);
-      console.log("Got lists");
       let shop_obj = new Shop(s.name, lists);
       shop_obj.id = s.id;
-      console.log("Shop is");
-      console.log(shop_obj);
       shops.push(shop_obj);
-      console.log(s);
     }
     this.shop_wait = false;
     return shops;
@@ -209,8 +204,6 @@ class DataManager {
   convertToItem(itemSQL) {
     console.log("Converting to items");
     return itemSQL.rows._array.map((item) => {
-      console.log(item);
-      console.log("Item is");
       let i = new Item(
         item.quantity,
         item.checked == "true",
@@ -219,7 +212,6 @@ class DataManager {
         item.photo,
         item.id,
       );
-      console.log(i);
       return i;
     });
   }
@@ -229,7 +221,7 @@ class DataManager {
   }
 
   async getShopItemsLocal(shopId) {
-    console.log(`Getting items for shop ${shopId}`);
+    //console.log(`Getting items for shop ${shopId}`);
     return this.localdb
       .getShopItems(shopId)
       .then((res) => this.convertToItem(res));
