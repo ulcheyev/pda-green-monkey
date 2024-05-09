@@ -49,6 +49,7 @@ const ListItem = ({ item }) => {
   });
 
   const itemOnPress = () => {
+    console.log(item.item.id);
     dataManager
       .changeItemCheckedLocal(item.item.id, !checked)
       .then(() => setChecked(!checked));

@@ -217,6 +217,7 @@ class DataManager {
         item.measure,
         item.name,
         item.photo,
+        item.id,
       );
       console.log(i);
       return i;
