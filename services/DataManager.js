@@ -276,6 +276,10 @@ class DataManager {
     //console.log(this.localdb)
     return this.localdb.createShop(listId, name);
   }
+
+  async uncheckAllItemsLocal(listId) {
+    return this.localdb.uncheckAllItems(listId);
+  }
 }
 
 const useDataManager = () => {

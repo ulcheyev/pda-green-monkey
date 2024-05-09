@@ -204,6 +204,23 @@ class LocalDB {
       }),
     );
   };
+
+  uncheckAllItems = async (listId) => {
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          "UPDATE Items SET checked = ? WHERE shopId in ( SELECT id FROM Shops WHERE listID = ? ); ",
+          [false, listId],
+          (txObt, result) => {
+            console.log("Unchecked all items");
+            resolve(result);
+          },
+          console.error,
+        );
+        console.log(tx);
+      }),
+    );
+  };
 }
 
 export default LocalDB;
