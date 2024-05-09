@@ -162,6 +162,23 @@ class LocalDB {
     );
   };
 
+  changeItemChecked = async (itemId, checked) => {
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          "UPDATE Items SET checked = ? WHERE id = ?",
+          [checked, itemId],
+          (txObt, result) => {
+            console.log(`CHanged ${itemId} to ${checked}`);
+            resolve(result);
+          },
+          console.error,
+        );
+        console.log(tx);
+      }),
+    );
+  };
+
   saveItem = async (
     name,
     price,

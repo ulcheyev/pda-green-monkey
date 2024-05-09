@@ -266,6 +266,10 @@ class DataManager {
     return this.localdb.createList(name);
   }
 
+  async changeItemCheckedLocal(itemId, checked) {
+    return this.localdb.changeItemChecked(itemId, checked);
+  }
+
   async saveShopLocal(name, listId) {
     console.log("Creating sshop local");
     //console.log(this.localdb)

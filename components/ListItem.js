@@ -49,9 +49,9 @@ const ListItem = ({ item }) => {
   });
 
   const itemOnPress = () => {
-    dataManager.changeTestNotificationCheckedById(item.item.id);
-
-    setChecked(!checked);
+    dataManager
+      .changeItemCheckedLocal(item.item.id, !checked)
+      .then(() => setChecked(!checked));
   };
 
   var photo;
