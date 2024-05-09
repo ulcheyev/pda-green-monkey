@@ -38,6 +38,10 @@ const ShoppingList = (props) => {
   const units = ["g", "kg", "ml", "L", "pts"];
 
   useEffect(() => {
+    refreshShops();
+  }, []);
+
+  const refreshShops = () => {
     utils.checkAuth().then((user) => {
       if (user) {
         console.log("User is online");
@@ -45,12 +49,12 @@ const ShoppingList = (props) => {
         console.log("Getting shops local");
         dataManager.getShopsLocal(props.route.params.list.id).then((res) => {
           console.log("Got shops");
-          //console.log(res);
-          res.then((r) => setShops(r));
+          console.log(res);
+          setShops(res);
         });
       }
     });
-  }, [props.route]);
+  };
 
   const styles = StyleSheet.create({
     shopCardContainer: {
@@ -177,14 +181,15 @@ const ShoppingList = (props) => {
         console.log("Adding shop local");
         dataManager
           .saveShopLocal(newShop.name, props.route.params.list.id)
-          .then(() => console.log("aaaa"))
+          .then(() => refreshShops())
           .catch((e) => console.error(e))
           .finally(() => console.log("Help me"));
+      } else {
+        setShops([...shops, newShop]);
       }
     });
     setAddShopName("");
     setIsError(false);
-    setShops([...shops, newShop]);
     setVisible(false);
   };
 
@@ -254,7 +259,7 @@ const ShoppingList = (props) => {
               shopToAddId,
               "",
             )
-            .then(() => console.log("Added item"));
+            .then(() => refreshShops());
         }
       });
     }

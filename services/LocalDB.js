@@ -113,7 +113,7 @@ class LocalDB {
           "SELECT * FROM Shops WHERE listId = ?",
           [listId],
           (txObt, result) => {
-            console.log("Got shops");
+            console.log("Got shops localDB");
             console.log(result);
             resolve(result);
           },

@@ -36,6 +36,7 @@ class DataManager {
       "CALLLED DM CONSTRUCTOR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
     );
     this.localdb = new LocalDB();
+    this.shop_wait = false;
   }
 
   getTestData = () => {
@@ -194,7 +195,14 @@ class DataManager {
       shops.push(shop_obj);
       console.log(s);
     }
+    this.shop_wait = false;
+    return shops;
+  }
 
+  convertToShopsSync(shop) {
+    console.log("COnverting to shops loc");
+    this.shop_wait = true;
+    let shops = this.convertToShops(shop);
     return shops;
   }
 
@@ -203,7 +211,15 @@ class DataManager {
     return itemSQL.rows._array.map((item) => {
       console.log(item);
       console.log("Item is");
-      return new Item(item.amount, item, checked, item.name, item.photo);
+      let i = new Item(
+        item.quantity,
+        item.checked == "true",
+        item.measure,
+        item.name,
+        item.photo,
+      );
+      console.log(i);
+      return i;
     });
   }
 
@@ -219,7 +235,9 @@ class DataManager {
   }
 
   async getShopsLocal(id) {
-    return this.localdb.getShops(id).then((res) => this.convertToShops(res));
+    return this.localdb
+      .getShops(id)
+      .then((res) => this.convertToShopsSync(res));
   }
 
   async saveList(list) {

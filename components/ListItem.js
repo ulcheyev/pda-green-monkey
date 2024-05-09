@@ -55,7 +55,7 @@ const ListItem = ({ item }) => {
   };
 
   var photo;
-  if (item.item.photo != undefined) {
+  if (item.item.photo != undefined && item.item.photo != "") {
     photo = (
       <Avatar.Image
         source={{ uri: item.item.photo }}
@@ -66,7 +66,7 @@ const ListItem = ({ item }) => {
   } else {
     photo = <></>;
   }
-
+  console.log(item.item);
   return (
     <TouchableOpacity
       onPress={(e) => {
