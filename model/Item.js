@@ -1,11 +1,12 @@
 class Item {
-  constructor(amount, checked, measure, name, photo) {
+  constructor(amount, checked, measure, name, photo, id = -1) {
     this.id;
     this.quantity = amount;
     this.checked = checked;
     this.measure = measure;
     this.name = name;
     this.photo = photo;
+    this.id = id == -1 ? undefined : id;
   }
 
   static schema = {

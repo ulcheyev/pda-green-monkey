@@ -186,6 +186,8 @@ const ShoppingListsContent = (props) => {
             setCreationListName("");
             setIsError(false);
           });
+
+        dataManager.saveShopLocal("gorillaz", 1);
       }
     });
   };
