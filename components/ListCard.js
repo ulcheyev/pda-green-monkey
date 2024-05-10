@@ -160,6 +160,7 @@ const ListCard = (props) => {
     props.navigation.navigate("ShoppingList", {
       title: props.list.name,
       list: props.list,
+      navigation: props.navigation,
     });
   };
 

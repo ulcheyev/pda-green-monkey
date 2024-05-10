@@ -17,14 +17,13 @@ import { useChanges } from "../../services/ChangesProvider";
 import { useFocusEffect } from "@react-navigation/native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import CameraScreen from "../camera/CameraScreen";
 
 const ShoppingListsContent = (props) => {
-
   const [addListModalVisible, setAddListModalVisible] = useState(false);
 
   const [visible, setVisible] = useState(false);
   const [templateVisible, setTemplateVisible] = useState(false);
-
 
   const dataManager = useDataManager();
   const changesProvider = useChanges();
@@ -190,7 +189,6 @@ const ShoppingListsContent = (props) => {
       setIsError(true);
       return;
     }
-
 
     utils.checkAuth().then((user) => {
       if (user) {

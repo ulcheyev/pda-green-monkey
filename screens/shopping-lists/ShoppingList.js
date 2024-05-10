@@ -14,6 +14,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import MonkeyModal from "../../components/MonkeyModal";
 import useDataManager from "../../services/DataManager";
+import CameraModal from "../../components/CameraModal";
 
 const ShoppingList = (props) => {
   const [visible, setVisible] = useState(false);
@@ -31,6 +32,9 @@ const ShoppingList = (props) => {
   const [quantityError, setQuantityError] = useState(false);
   const [priceError, setPriceError] = useState(false);
   const [unitError, setUnitError] = useState(false);
+  const [cameraVisible, setCameraVisible] = useState(false);
+  const [pictureToSave, setPictureToSave] = useState("");
+
   const utils = useUtils();
   const theme = useTheme();
   const dataManager = useDataManager();
@@ -156,6 +160,7 @@ const ShoppingList = (props) => {
     setPriceError(false);
     setQuantityError(false);
     setUnitError(false);
+    setPictureToSave("");
   };
 
   const openAddItemModal = (shop) => {
@@ -198,6 +203,14 @@ const ShoppingList = (props) => {
 
   const validateEmpty = (text) => {
     return text.trim().length === 0;
+  };
+
+  const toggleCamera = () => {
+    setCameraVisible(true);
+  };
+
+  const hideCamera = () => {
+    setCameraVisible(false);
   };
 
   const addItem = () => {
@@ -256,7 +269,7 @@ const ShoppingList = (props) => {
               false,
               addItemUnit,
               shopToAddId,
-              "",
+              pictureToSave,
             )
             .then(() => refreshShops());
         }
@@ -327,6 +340,12 @@ const ShoppingList = (props) => {
             Add
           </Button>
         </MonkeyModal>
+        <CameraModal
+          visible={cameraVisible}
+          hideModal={hideCamera}
+          setPicture={setPictureToSave}
+        ></CameraModal>
+
         <MonkeyModal
           visible={addItemModalVisible}
           hideModal={hideAddItemModal}
@@ -334,7 +353,7 @@ const ShoppingList = (props) => {
           modalContainerStyle={styles.modalContainer}
           title={`Add item to ${shopToAddItem}`}
           leftSideHeaderItems={
-            <Button style={styles.addPhotoButton}>
+            <Button style={styles.addPhotoButton} onPress={toggleCamera}>
               <Icon source="camera" size={17}></Icon>
             </Button>
           }
