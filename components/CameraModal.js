@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { TouchableOpacity, ImageBackground } from "react-native";
 
 const CameraModal = (props) => {
-  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const theme = useTheme();
@@ -62,10 +61,6 @@ const CameraModal = (props) => {
     setPreviewVisible(false);
     //setStartCamera(true)
   };
-
-  useEffect(() => {
-    requestPermission();
-  }, []);
 
   return (
     <View>

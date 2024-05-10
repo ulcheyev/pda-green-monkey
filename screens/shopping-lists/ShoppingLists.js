@@ -17,6 +17,7 @@ import { useChanges } from "../../services/ChangesProvider";
 import { useFocusEffect } from "@react-navigation/native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import Statistics from "../statistics/Statistics";
 
 const ShoppingListsContent = (props) => {
   const [addListModalVisible, setAddListModalVisible] = useState(false);

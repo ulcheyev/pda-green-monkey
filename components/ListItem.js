@@ -69,7 +69,6 @@ const ListItem = ({ item, setPhoto }) => {
   } else {
     photo = <></>;
   }
-  console.log(item.item);
   return (
     <TouchableOpacity
       onPress={(e) => {

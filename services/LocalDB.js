@@ -59,9 +59,6 @@ class LocalDB {
     return new Promise(() =>
       this.localdatabase.transaction((tx) => {
         console.log("Initiating tables...");
-        // tx.executeSql('DROP TABLE IF EXISTS Items', null, console.log, console.error)
-        // tx.executeSql('DROP TABLE IF EXISTS Lists', null, console.log, console.error)
-        // tx.executeSql('DROP TABLE IF EXISTS Shops', null, console.log, console.error)
 
         tx.executeSql(
           listQuery,
@@ -245,7 +242,6 @@ class LocalDB {
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
         tx.executeSql("SELECT * FROM Notifications", null, (txObt, result) => {
-          console.log(result);
           resolve(result);
         });
       }),

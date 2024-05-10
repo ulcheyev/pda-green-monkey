@@ -16,6 +16,7 @@ import MonkeyModal from "../../components/MonkeyModal";
 import useDataManager from "../../services/DataManager";
 import CameraModal from "../../components/CameraModal";
 import PhotoPreview from "../../components/PhotoPreview";
+import { Camera, CameraType } from "expo-camera";
 
 const ShoppingList = (props) => {
   const [visible, setVisible] = useState(false);
@@ -167,7 +168,6 @@ const ShoppingList = (props) => {
   };
 
   const openAddItemModal = (shop) => {
-    console.log(shop);
     setAddItemModalVisible(true);
     setShopToAddItem(shop.name);
     setShopToAddId(shop.id);
@@ -208,8 +208,16 @@ const ShoppingList = (props) => {
     return text.trim().length === 0;
   };
 
-  const toggleCamera = () => {
-    setCameraVisible(true);
+  const toggleCamera = async () => {
+    console.log("Wwaiting for statsu");
+    const { status } = await Camera.requestCameraPermissionsAsync();
+
+    console.log(status);
+    if (status === "granted") {
+      setCameraVisible(true);
+    } else {
+      Alert.alert("Access denied");
+    }
   };
 
   const hideCamera = () => {
@@ -256,7 +264,6 @@ const ShoppingList = (props) => {
     }
     if (!error) {
       console.log("Added item");
-      console.log(addItemName);
       hideAddItemModal();
       //{ id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 2 }
       utils.checkAuth().then((user) => {
