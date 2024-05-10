@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import MonkeyModal from "../../components/MonkeyModal";
 import useDataManager from "../../services/DataManager";
 import CameraModal from "../../components/CameraModal";
+import PhotoPreview from "../../components/PhotoPreview";
 
 const ShoppingList = (props) => {
   const [visible, setVisible] = useState(false);
@@ -34,6 +35,8 @@ const ShoppingList = (props) => {
   const [unitError, setUnitError] = useState(false);
   const [cameraVisible, setCameraVisible] = useState(false);
   const [pictureToSave, setPictureToSave] = useState("");
+  const [photoModal, setPhotoModal] = useState("");
+  const [photoModalVisible, setPhotoModalVisible] = useState(false);
 
   const utils = useUtils();
   const theme = useTheme();
@@ -213,6 +216,16 @@ const ShoppingList = (props) => {
     setCameraVisible(false);
   };
 
+  const openPhotoModal = (photo) => {
+    setPhotoModal(photo);
+    setPhotoModalVisible(true);
+  };
+
+  const hidePhotoModal = () => {
+    setPhotoModal("");
+    setPhotoModalVisible(false);
+  };
+
   const addItem = () => {
     /**
      * Validate name, quantity, price, unit */
@@ -307,6 +320,7 @@ const ShoppingList = (props) => {
                 id={shop.item.id}
                 listProgress={props.route.params.list.progress}
                 addItem={openAddItemModal}
+                showPhoto={openPhotoModal}
               />
             );
           }}
@@ -345,6 +359,12 @@ const ShoppingList = (props) => {
           hideModal={hideCamera}
           setPicture={setPictureToSave}
         ></CameraModal>
+
+        <PhotoPreview
+          hideModal={hidePhotoModal}
+          photo={photoModal}
+          visible={photoModalVisible}
+        />
 
         <MonkeyModal
           visible={addItemModalVisible}

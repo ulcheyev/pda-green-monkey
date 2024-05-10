@@ -114,7 +114,7 @@ const ShopCard = (props) => {
               alwaysBounceVertical={false}
               data={props.shop.items}
               renderItem={(item) => {
-                return <ListItem item={item} />;
+                return <ListItem item={item} setPhoto={props.showPhoto} />;
               }}
             />
             <AddItemButton shop={props.shop} addItem={props.addItem} />

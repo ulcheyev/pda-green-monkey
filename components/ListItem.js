@@ -4,7 +4,7 @@ import useDataManager from "../services/DataManager";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
 
-const ListItem = ({ item }) => {
+const ListItem = ({ item, setPhoto }) => {
   const theme = useTheme();
   const [checked, setChecked] = React.useState(item.item.checked);
   const dataManager = useDataManager();
@@ -58,11 +58,13 @@ const ListItem = ({ item }) => {
   var photo;
   if (item.item.photo != undefined && item.item.photo != "") {
     photo = (
-      <Avatar.Image
-        source={{ uri: item.item.photo }}
-        size={45}
-        style={styles.photoIcon}
-      />
+      <TouchableOpacity onPress={() => setPhoto(item.item.photo)}>
+        <Avatar.Image
+          source={{ uri: item.item.photo }}
+          size={45}
+          style={styles.photoIcon}
+        />
+      </TouchableOpacity>
     );
   } else {
     photo = <></>;
