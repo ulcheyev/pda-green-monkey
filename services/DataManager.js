@@ -245,7 +245,6 @@ class DataManager {
     }
   }
 
-
   async updateListName(list, newName) {
     const q = query(
       collection(db, "lists"),
@@ -286,6 +285,7 @@ class DataManager {
     } catch (error) {
       console.error("Error removing document: ", error);
     }
+  }
 
   async saveItemLocal(name, price, quantity, checked, measure, shopId, photo) {
     console.log("DM works");
@@ -316,7 +316,6 @@ class DataManager {
 
   async uncheckAllItemsLocal(listId) {
     return this.localdb.uncheckAllItems(listId);
-
   }
 }
 
