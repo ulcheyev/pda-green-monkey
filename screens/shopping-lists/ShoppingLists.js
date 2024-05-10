@@ -19,14 +19,24 @@ import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ShoppingListsContent = (props) => {
+
   const [addListModalVisible, setAddListModalVisible] = useState(false);
+
+  const [visible, setVisible] = useState(false);
+  const [templateVisible, setTemplateVisible] = useState(false);
+
+
   const dataManager = useDataManager();
   const changesProvider = useChanges();
   const utils = useUtils();
   const [lists, setLists] = useState([]);
   const [isError, setIsError] = useState(false);
+  const [isTemplateError, setIsTemplateError] = useState(false);
+
   const [refreshing, setRefreshing] = useState(false);
   const [creationListName, setCreationListName] = React.useState("");
+  const [templateListName, setTemplateListName] = React.useState("");
+
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -151,8 +161,8 @@ const ShoppingListsContent = (props) => {
           setRefreshing(false);
         });
       } else {
+        dataManager.getListsLocal().then((r) => setLists(r));
         setRefreshing(false);
-        setLists([]);
       }
     });
   };
@@ -162,33 +172,65 @@ const ShoppingListsContent = (props) => {
     setCreationListName("");
     setIsError(false);
   };
+  const hideTemplateModal = () => {
+    setTemplateVisible(false);
+    setTemplateListName("");
+    setIsTempateError(false);
+  };
+
+  const saveTemplate = () => {
+    if (!templateListName) {
+      setIsTemplateError(true);
+      return;
+    }
+  };
 
   const createList = () => {
     if (!creationListName) {
       setIsError(true);
       return;
     }
-    const newList = {
-      id: lists.length + 1,
-      name: creationListName,
-      isTemplate: false,
-      progress: 0,
-      shops: [],
-      uid: dataManager.getCurrentUser().uid,
-    };
-    dataManager
-      .saveList(newList)
-      .then(() => {
-        setLists([...lists, newList]);
-      })
-      .finally(() => {
-        setAddListModalVisible(false);
-        setCreationListName("");
-        setIsError(false);
-      });
+
+
+    utils.checkAuth().then((user) => {
+      if (user) {
+        const newList = {
+          id: lists.length + 1,
+          name: creationListName,
+          isTemplate: false,
+          progress: 0,
+          shops: [],
+          uid: dataManager.getCurrentUser().uid,
+        };
+        dataManager
+          .saveList(newList)
+          .then(() => {
+            setLists([...lists, newList]);
+          })
+          .finally(() => {
+            setVisible(false);
+            setCreationListName("");
+            setIsError(false);
+          });
+      } else {
+        console.log("Creating list");
+        dataManager
+          .saveListLocal(creationListName)
+          .then(() => handleRefresh())
+          //.then(() => dataManager.saveShopLocal("shop1", 1))
+          .finally(() => {
+            setVisible(false);
+            setCreationListName("");
+            setIsError(false);
+          });
+
+        //dataManager.saveShopLocal("gorillaz", 1);
+      }
+    });
   };
 
   const onChangeCreationListName = (text) => setCreationListName(text);
+  const onChangeTemplateListName = (text) => setTemplateListName(text);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -200,6 +242,15 @@ const ShoppingListsContent = (props) => {
             setLoading(false);
           });
         } else {
+          dataManager
+            .getListsLocal()
+            .then((r) => {
+              console.log("Got result");
+              console.log(r);
+              setLists(r);
+            })
+            .catch((e) => console.error(e));
+
           setLoading(false);
           console.log("User is not authenticated");
         }
@@ -288,6 +339,30 @@ const ShoppingListsContent = (props) => {
         <Button
           style={styles.button}
           onPress={createList}
+          labelStyle={styles.buttonTitleStyle}
+        >
+          Create
+        </Button>
+      </MonkeyModal>
+      <MonkeyModal
+        visible={templateVisible}
+        hideModal={hideTemplateModal}
+        modalContentStyle={styles.modalContentStyle}
+        modalContainerStyle={styles.modalContainer}
+        title={"Add modal"}
+      >
+        <View>
+          <TextInput
+            label="Template name"
+            value={templateListName}
+            onChangeText={onChangeTemplateListName}
+            style={styles.listNameInput}
+            error={isTemplateError && "red"}
+          />
+        </View>
+        <Button
+          style={styles.button}
+          onPress={saveTemplate}
           labelStyle={styles.buttonTitleStyle}
         >
           Create

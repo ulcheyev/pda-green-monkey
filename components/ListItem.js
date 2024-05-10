@@ -49,13 +49,14 @@ const ListItem = ({ item }) => {
   });
 
   const itemOnPress = () => {
-    dataManager.changeTestNotificationCheckedById(item.item.id);
-
-    setChecked(!checked);
+    console.log(item.item.id);
+    dataManager
+      .changeItemCheckedLocal(item.item.id, !checked)
+      .then(() => setChecked(!checked));
   };
 
   var photo;
-  if (item.item.photo != undefined) {
+  if (item.item.photo != undefined && item.item.photo != "") {
     photo = (
       <Avatar.Image
         source={{ uri: item.item.photo }}
@@ -66,7 +67,7 @@ const ListItem = ({ item }) => {
   } else {
     photo = <></>;
   }
-
+  console.log(item.item);
   return (
     <TouchableOpacity
       onPress={(e) => {
