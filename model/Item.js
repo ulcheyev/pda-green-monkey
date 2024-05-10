@@ -1,10 +1,11 @@
 class Item {
-  constructor(amount, checked, measure, name, photo, id = -1) {
+  constructor(amount, checked, measure, name, photo, price = 0, id = -1) {
     this.id;
     this.quantity = amount;
     this.checked = checked;
     this.measure = measure;
     this.name = name;
+    this.price = price;
     this.photo = photo;
     this.id = id == -1 ? undefined : id;
   }

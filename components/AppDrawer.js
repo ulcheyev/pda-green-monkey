@@ -12,7 +12,7 @@ import {
 import HelpPage from "../screens/help/HelpPage";
 import useUtils from "../utils/Utils";
 import useDataManager from "../services/DataManager";
-import StatisticsPage from "../screens/statistics/Statistics";
+import StatisticsPage from "../screens/statistics/StatisticsPage";
 
 const screens = [
   {
