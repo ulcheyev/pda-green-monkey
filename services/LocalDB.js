@@ -225,7 +225,7 @@ class LocalDB {
           [date, shop],
           (txObt, result) => {
             console.log("Result is");
-            console.log(result);
+            console.log(result.rows._array);
             if (result.rows._array.length > 0) {
               this.updatePrice(shop, date, price);
             } else {
@@ -255,13 +255,16 @@ class LocalDB {
 
   updatePrice = async (shop, date, price) => {
     const updateQuery =
-      "UPDATE Purchase SET price = price + ? WHERE date = date AND shop = ?";
+      "UPDATE Purchase SET price = (price + ?) WHERE date = ? AND shop = ?";
     console.log(shop);
     this.localdatabase.transaction((tx) => {
       tx.executeSql(
         updateQuery,
         [price, date, shop],
-        (r) => console.log("updatedd"),
+        (tx, r) => {
+          console.log(r);
+          console.log("updatedd");
+        },
         console.error,
       );
     });
@@ -326,8 +329,8 @@ class LocalDB {
       "SELECT shop, SUM(price) AS total_price FROM Purchase GROUP BY shop;";
     this.localdatabase.transaction((tx) => {
       tx.executeSql(
-        sqlQuery,
-        [dateFrom, dateTo],
+        "SELECT * FROM Purchase",
+        null,
         (txObt, result) => {
           console.log("success");
           console.log(result.rows._array);

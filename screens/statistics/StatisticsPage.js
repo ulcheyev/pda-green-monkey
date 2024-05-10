@@ -9,7 +9,7 @@ import { useState, useCallback, useEffect } from "react";
 import { DatePickerModal } from "react-native-paper-dates";
 import useDataManager from "../../services/DataManager";
 
-const StatisticsContent = () => {
+const StatisticsContent = (props) => {
   const theme = useTheme();
   const [range, setRange] = useState({
     startDate: undefined,
@@ -79,8 +79,11 @@ const StatisticsContent = () => {
     console.log("getitgn");
     dataManager
       .getPurchasesGroupedByShopLocal("2024-01-01", "2024-12-31")
-      .then((r) => setShopsDivided(r));
-  }, []);
+      .then((r) => {
+        setShopsDivided(r);
+        console.log(shopsDivided);
+      });
+  }, [props]);
 
   const style = StyleSheet.create({
     mainFrame: {
