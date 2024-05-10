@@ -1,5 +1,4 @@
-import { Card } from "react-native-paper";
-import { Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import Header from "../../components/Header";
 import { createStackNavigator } from "@react-navigation/stack";
 

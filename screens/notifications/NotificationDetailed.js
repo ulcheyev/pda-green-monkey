@@ -1,7 +1,5 @@
-import { Card, Text } from "react-native-paper";
-import { View } from "react-native";
-import { StyleSheet } from "react-native";
-import { useTheme } from "react-native-paper";
+import { Card, Text, useTheme } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
 
 const NotificationDetailed = (props) => {
   const theme = useTheme();

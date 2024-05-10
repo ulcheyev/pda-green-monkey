@@ -10,6 +10,8 @@ import {
   DrawerItem,
 } from "@react-navigation/drawer";
 import HelpPage from "../screens/help/HelpPage";
+import useUtils from "../utils/Utils";
+import useDataManager from "../services/DataManager";
 
 const screens = [
   {
@@ -50,6 +52,7 @@ const screens = [
 ];
 
 const CustomDrawerContent = (props) => {
+  const dataManager = useDataManager();
   const theme = useTheme();
   const styles = StyleSheet.create({
     allItemsContainer: {
@@ -83,6 +86,9 @@ const CustomDrawerContent = (props) => {
           <Icon size={45} source="baby-face" />
           <Text variant="headlineMedium">Green Monkey</Text>
         </View>
+        <Text style={{ textAlign: "center" }} variant="bodyMedium">
+          Hello {dataManager.getCurrentUser()?.displayName}!
+        </Text>
         <View style={styles.itemsContainer}>
           {screens.map(
             (screen, index) =>

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { Icon, Text, useTheme } from "react-native-paper";
-import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 import ProgressBar from "./ProgressBar";
 import ListItem from "./ListItem";
 import {

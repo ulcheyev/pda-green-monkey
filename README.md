@@ -42,3 +42,14 @@ $ npx expo start
      Then can scan the QR code in the Expo Developer Tools to run the application on your device.
    - Run on Android device/emulator
    - Run on iOS simulator
+
+## For collaborators
+
+1. Install gpg
+2. Provide gpg public key
+3. Install git crypt
+4. After fetching data / cloning repository use
+
+```shell
+$ git-crypt unlock
+```

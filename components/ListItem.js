@@ -1,14 +1,13 @@
-import { StyleSheet } from "react-native";
-import { Card, useTheme, Text, Avatar, Icon } from "react-native-paper";
-import { View } from "react-native";
-import DataManager from "../services/DataManager";
+import { StyleSheet, View } from "react-native";
+import { Avatar, Card, Icon, Text, useTheme } from "react-native-paper";
+import useDataManager from "../services/DataManager";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
 
 const ListItem = ({ item }) => {
   const theme = useTheme();
   const [checked, setChecked] = React.useState(item.item.checked);
-  const dataManager = new DataManager();
+  const dataManager = useDataManager();
   const styles = StyleSheet.create({
     itemCard: {
       borderRadius: 5,
@@ -50,13 +49,14 @@ const ListItem = ({ item }) => {
   });
 
   const itemOnPress = () => {
-    dataManager.changeTestNotificationCheckedById(item.item.id);
-
-    setChecked(!checked);
+    console.log(item.item.id);
+    dataManager
+      .changeItemCheckedLocal(item.item.id, !checked)
+      .then(() => setChecked(!checked));
   };
 
   var photo;
-  if (item.item.photo != undefined) {
+  if (item.item.photo != undefined && item.item.photo != "") {
     photo = (
       <Avatar.Image
         source={{ uri: item.item.photo }}
@@ -67,7 +67,7 @@ const ListItem = ({ item }) => {
   } else {
     photo = <></>;
   }
-
+  console.log(item.item);
   return (
     <TouchableOpacity
       onPress={(e) => {

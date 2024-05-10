@@ -22,7 +22,13 @@ const Header = ({ navigation, back }) => {
     navigation.toggleDrawer();
   };
 
-  const accountPress = () => {};
+  const accountPress = () => {
+    utils
+      .checkAuth()
+      .then((user) =>
+        user ? navigation.navigate("UserInfo") : navigation.navigate("Login"),
+      );
+  };
 
   return (
     <Appbar.Header style={styles.header}>

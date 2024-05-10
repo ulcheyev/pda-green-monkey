@@ -1,4 +1,4 @@
-import { Card, Text, useTheme, Icon } from "react-native-paper";
+import { Card, Icon, Text, useTheme } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 
 const NotificationCard = ({ notification, navigation }) => {
