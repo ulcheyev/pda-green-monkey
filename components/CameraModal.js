@@ -63,7 +63,9 @@ const CameraModal = (props) => {
     //setStartCamera(true)
   };
 
-  useEffect(() => requestPermission(), []);
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
   return (
     <View>
