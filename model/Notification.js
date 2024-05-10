@@ -1,6 +1,6 @@
 class Notification {
-  constructor(detailedText, name) {
-    this.date = new Date().toDateString();
+  constructor(detailedText, name, date) {
+    this.date = date;
     this.header = name;
     this.text = detailedText;
   }

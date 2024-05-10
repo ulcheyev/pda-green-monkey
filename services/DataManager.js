@@ -219,6 +219,14 @@ class DataManager {
     });
   }
 
+  convertToNotification(notificationSQL) {
+    console.log("Converting to items");
+    return notificationSQL.rows._array.map((n) => {
+      let notification = new Notification(n.text, n.header, n.date);
+      return notification;
+    });
+  }
+
   async getListsLocal() {
     return this.localdb.getListItems().then((res) => this.convertToLists(res));
   }
@@ -316,6 +324,12 @@ class DataManager {
 
   async uncheckAllItemsLocal(listId) {
     return this.localdb.uncheckAllItems(listId);
+  }
+
+  async getNotificaitonsLocal() {
+    return this.localdb
+      .getNotifications()
+      .then((notification) => this.convertToNotification(notification));
   }
 }
 

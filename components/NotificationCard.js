@@ -43,7 +43,7 @@ const NotificationCard = ({ notification, navigation }) => {
         <Card.Content>
           <View style={styles.notificationContainer}>
             <Text variant="titleLarge" width="100%">
-              {notification.name}
+              {notification.header}
             </Text>
             {notification.isNew ? (
               <View style={styles.newIcon}>

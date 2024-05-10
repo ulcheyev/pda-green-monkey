@@ -43,6 +43,19 @@ class LocalDB {
      )
     `;
 
+    const notificationsQuery = `
+     CREATE TABLE IF NOT EXISTS Notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        header TEXT,
+        text TEXT,
+        date DATE
+     )
+    `;
+
+    const insertNotification = `
+    INSERT INTO Notifications (header, text, date) VALUES (?, ?, ?) 
+    `;
+
     return new Promise(() =>
       this.localdatabase.transaction((tx) => {
         console.log("Initiating tables...");
@@ -74,6 +87,18 @@ class LocalDB {
           },
           console.error,
         );
+        tx.executeSql(notificationsQuery, null, (tx, r) => {
+          console.log("Created notifications table");
+        });
+
+        // tx.executeSql(
+        //   insertNotification,
+        //   ["Name", "This is a notification !!!!", "2024-08-02"],
+        //   (tx, r) => {
+        //     console.log("Created new notificaion");
+        //   },
+        // console.error,
+        // );
         //console.log(FileSystem.documentDirectory);
       }),
     );
@@ -212,6 +237,17 @@ class LocalDB {
           },
           console.error,
         );
+      }),
+    );
+  };
+
+  getNotifications = async () => {
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql("SELECT * FROM Notifications", null, (txObt, result) => {
+          console.log(result);
+          resolve(result);
+        });
       }),
     );
   };
