@@ -14,10 +14,13 @@ import { auth, db } from "./firestore";
 import {
   addDoc,
   collection,
+  doc,
   getDoc,
   getDocs,
   query,
   where,
+  deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import LocalDB from "./LocalDB";
 
@@ -242,6 +245,48 @@ class DataManager {
     }
   }
 
+
+  async updateListName(list, newName) {
+    const q = query(
+      collection(db, "lists"),
+      where("uid", "==", this.getCurrentUser().uid),
+      where("id", "==", list.id),
+    );
+    // update name
+    try {
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach(async (document) => {
+          const docRef = document.ref;
+          await updateDoc(docRef, {
+            name: newName,
+          });
+        });
+        console.log("List name updated successfully");
+      } else {
+        console.log("No document found with the given ID and user ID.");
+      }
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  }
+
+  async deleteList(list) {
+    const q = query(
+      collection(db, "lists"),
+      where("uid", "==", this.getCurrentUser().uid),
+      where("id", "==", list.id),
+    );
+
+    try {
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+    } catch (error) {
+      console.error("Error removing document: ", error);
+    }
+
   async saveItemLocal(name, price, quantity, checked, measure, shopId, photo) {
     console.log("DM works");
     return this.localdb.saveItem(
@@ -271,6 +316,7 @@ class DataManager {
 
   async uncheckAllItemsLocal(listId) {
     return this.localdb.uncheckAllItems(listId);
+
   }
 }
 

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { auth } from "../services/firestore";
+import { getAuth } from "firebase/auth";
 
 class Utils {
   getCurrentScreenName(navigation) {
