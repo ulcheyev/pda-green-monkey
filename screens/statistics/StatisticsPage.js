@@ -49,25 +49,33 @@ const StatisticsContent = (props) => {
     setOpen(false);
   }, [setOpen]);
 
+  const formatDate = (date) => {
+    // Get month, day, and year
+    var month = date.getMonth() + 1; // Months are zero based
+    var day = date.getDate();
+    var year = date.getFullYear();
+
+    // Add leading zeros if necessary
+    month = month < 10 ? "0" + month : month;
+    day = day < 10 ? "0" + day : day;
+
+    // Return formatted date
+    return month + "-" + day + "-" + year;
+  };
+
   const onConfirm = useCallback(
     ({ startDate, endDate }) => {
       setOpen(false);
       setRange({ startDate, endDate });
       let startDateText, endDateText;
       if (!startDate) {
-        startDateText = "1-1-2024";
+        startDateText = "01-01-2024";
       }
       if (!endDate) {
         endDateText = "12-31-2024";
       } else {
-        startDateText = startDate
-          .toLocaleDateString("en-US")
-          .replace("/", "-")
-          .replace("/", "-");
-        endDateText = endDate
-          .toLocaleDateString("en-US")
-          .replace("/", "-")
-          .replace("/", "-");
+        startDateText = formatDate(startDate);
+        endDateText = formatDate(startDate);
       }
       console.log(startDate);
       console.log(endDate);

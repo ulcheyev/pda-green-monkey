@@ -327,17 +327,17 @@ class LocalDB {
     console.log(dateTo);
     const sqlQuery =
       "SELECT shop, SUM(price) AS total_price FROM Purchase WHERE date BETWEEN ? AND ? GROUP BY shop;";
-    // this.localdatabase.transaction((tx) => {
-    //   tx.executeSql(
-    //     "SELECT * FROM Purchase",
-    //     null,
-    //     (txObt, result) => {
-    //       console.log("success");
-    //       console.log(result.rows._array);
-    //     },
-    //     console.error,
-    //   );
-    // });
+    this.localdatabase.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM Purchase",
+        null,
+        (txObt, result) => {
+          console.log("success");
+          console.log(result.rows._array);
+        },
+        console.error,
+      );
+    });
 
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {

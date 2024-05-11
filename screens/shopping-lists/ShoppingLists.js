@@ -224,6 +224,7 @@ const ShoppingListsContent = (props) => {
         //dataManager.saveShopLocal("gorillaz", 1);
       }
     });
+    setAddListModalVisible(false);
   };
 
   const onChangeCreationListName = (text) => setCreationListName(text);
