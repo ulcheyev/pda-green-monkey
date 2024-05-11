@@ -8,6 +8,7 @@ import { Button } from "react-native-paper";
 import { useState, useCallback, useEffect } from "react";
 import { DatePickerModal } from "react-native-paper-dates";
 import useDataManager from "../../services/DataManager";
+import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 
 const StatisticsContent = (props) => {
   const theme = useTheme();
@@ -52,9 +53,37 @@ const StatisticsContent = (props) => {
     ({ startDate, endDate }) => {
       setOpen(false);
       setRange({ startDate, endDate });
+      let startDateText, endDateText;
+      if (!startDate) {
+        startDateText = "1-1-2024";
+      }
+      if (!endDate) {
+        endDateText = "12-31-2024";
+      } else {
+        startDateText = startDate
+          .toLocaleDateString("en-US")
+          .replace("/", "-")
+          .replace("/", "-");
+        endDateText = endDate
+          .toLocaleDateString("en-US")
+          .replace("/", "-")
+          .replace("/", "-");
+      }
+      console.log(startDate);
+      console.log(endDate);
+      getShopHist(startDateText, endDateText);
     },
     [setOpen, setRange],
   );
+
+  const getShopHist = (dateFrom, dateTo) => {
+    console.log("getitgn");
+    dataManager.getPurchasesGroupedByShopLocal(dateFrom, dateTo).then((r) => {
+      setShopsDivided(r);
+      console.log("Shops divided are");
+      console.log(shopsDivided);
+    });
+  };
 
   useEffect(() => {
     mapp = new Map();
@@ -76,14 +105,8 @@ const StatisticsContent = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log("getitgn");
-    dataManager
-      .getPurchasesGroupedByShopLocal("2024-01-01", "2024-12-31")
-      .then((r) => {
-        setShopsDivided(r);
-        console.log(shopsDivided);
-      });
-  }, [props]);
+    getShopHist("01-01-2024", "12-31-2024");
+  }, []);
 
   const style = StyleSheet.create({
     mainFrame: {
@@ -142,7 +165,12 @@ const StatisticsContent = (props) => {
             endDate={range.endDate}
             onConfirm={onConfirm}
           />
-          <BarChart data={shopsDivided} />
+          <BarChart
+            showFractionalValue
+            showYAxisIndices
+            noOfSections={4}
+            data={shopsDivided}
+          />
         </Card>
       </View>
     </View>

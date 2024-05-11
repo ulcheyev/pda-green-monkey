@@ -234,7 +234,6 @@ class DataManager {
         value: item.total_price,
         label: item.shop,
       };
-      console.log(d);
       return d;
     });
   }
