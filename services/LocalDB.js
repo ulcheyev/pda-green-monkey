@@ -270,6 +270,38 @@ class LocalDB {
     });
   };
 
+  deleteShop = async (shopId) => {
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          "DELETE FROM Shops WHERE id = ?",
+          [shopId],
+          (txObt, result) => {
+            console.log("Deleted shop :)");
+            resolve(result);
+          },
+          console.error,
+        );
+      }),
+    );
+  };
+
+  deleteItem = async (itemId) => {
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          "DELETE FROM Items WHERE id = ?",
+          [itemId],
+          (txObt, result) => {
+            console.log("Deleted item :)");
+            resolve(result);
+          },
+          console.error,
+        );
+      }),
+    );
+  };
+
   saveItem = async (
     name,
     price,

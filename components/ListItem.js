@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
 import { useSettings } from "../services/SettingsContext";
 
-const ListItem = ({ item, setPhoto, shopName }) => {
+const ListItem = ({ item, setPhoto, shopName, itemDelete }) => {
   const theme = useTheme();
   const { settings } = useSettings();
   const [checked, setChecked] = React.useState(item.item.checked);
@@ -86,6 +86,9 @@ const ListItem = ({ item, setPhoto, shopName }) => {
     <TouchableOpacity
       onPress={(e) => {
         itemOnPress();
+      }}
+      onLongPress={(e) => {
+        itemDelete(item.item.id, item.item.name);
       }}
     >
       <Card style={styles.itemCard}>

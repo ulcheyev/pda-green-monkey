@@ -17,10 +17,10 @@ import useDataManager from "../../services/DataManager";
 import CameraModal from "../../components/CameraModal";
 import PhotoPreview from "../../components/PhotoPreview";
 import { Camera, CameraType } from "expo-camera";
-import { useSettings } from "../../services/SettingsContext";
+import { SwipeListView } from "react-native-swipe-list-view";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ShoppingList = (props) => {
-  const { saveSetting } = useSettings();
   const [visible, setVisible] = useState(false);
   const [addShopName, setAddShopName] = React.useState("");
   const [shopToAddId, setShopToAddId] = React.useState("");
@@ -40,6 +40,13 @@ const ShoppingList = (props) => {
   const [pictureToSave, setPictureToSave] = useState("");
   const [photoModal, setPhotoModal] = useState("");
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
+  const [itemIdToDelete, setItemIdToDelete] = useState();
+  const [itemNameToDelete, setItemNameToDelete] = useState("");
+  const [deleteItemModalVisible, setDeleteItemModalVisible] = useState(false);
+
+  const [shopIdToDelete, setShopIdToDelete] = useState();
+  const [shopNameToDelete, setShopNameToDelete] = useState("");
+  const [deleteShopModalVisible, setDeleteShopModalVisible] = useState(false);
 
   const utils = useUtils();
   const theme = useTheme();
@@ -143,7 +150,80 @@ const ShoppingList = (props) => {
     unitButtonLabel: {
       color: theme.colors.primary,
     },
+    deleteButton: {
+      backgroundColor: "red",
+    },
+    rowBack: {
+      alignItems: "center",
+      backgroundColor: "red",
+      margin: 7,
+      marginTop: 20,
+      flex: 1,
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      paddingLeft: 15,
+      borderRadius: 15,
+    },
+    backRightBtn: {
+      alignItems: "center",
+      bottom: 0,
+      justifyContent: "flex-end",
+      top: 0,
+      width: 75,
+      borderBottomRightRadius: 7,
+      borderTopRightRadius: 7,
+    },
+    backRightBtnRight: {
+      backgroundColor: "red",
+      flex: 1,
+      height: "100%",
+      flexDirection: "column",
+      justifyContent: "center",
+      right: 0,
+    },
   });
+
+  const hideDeleteItemModal = () => {
+    setDeleteItemModalVisible(false);
+    setItemIdToDelete();
+    setItemNameToDelete("");
+  };
+
+  const openDeleteItemModal = (itemId, itemName) => {
+    console.log("Called delete item");
+    setItemIdToDelete(itemId);
+    console.log(itemIdToDelete);
+    setItemNameToDelete(itemName);
+    setDeleteItemModalVisible(true);
+  };
+
+  const confirmItemDelete = () => {
+    dataManager.deleteItemLocal(itemIdToDelete).then(() => refreshShops());
+    setItemIdToDelete();
+    setItemNameToDelete("");
+    setDeleteItemModalVisible(false);
+  };
+
+  const hideDeleteShopModal = () => {
+    setDeleteShopModalVisible(false);
+    setItemIdToDelete();
+    setItemNameToDelete("");
+  };
+
+  const openDeleteShopModal = (shopId, shopName) => {
+    console.log("Called delete shop");
+    setShopIdToDelete(shopId);
+    console.log(shopIdToDelete);
+    setShopNameToDelete(shopName);
+    setDeleteShopModalVisible(true);
+  };
+
+  const confirmShopDelete = () => {
+    dataManager.deleteShopLocal(shopIdToDelete).then(() => refreshShops());
+    setShopIdToDelete();
+    setShopNameToDelete("");
+    setDeleteShopModalVisible(false);
+  };
 
   const fabOnPress = () => {
     setVisible(true);
@@ -236,6 +316,17 @@ const ShoppingList = (props) => {
     setPhotoModalVisible(false);
   };
 
+  const renderHiddenItem = (data) => (
+    <View style={styles.rowBack}>
+      <TouchableOpacity
+        style={[styles.backRightBtn, styles.backRightBtnRight]}
+        onPress={() => openDeleteShopModal(data.item.id, data.item.name)}
+      >
+        <Text style={styles.backTextWhite}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   const addItem = () => {
     /**
      * Validate name, quantity, price, unit */
@@ -318,22 +409,26 @@ const ShoppingList = (props) => {
         height={28}
       />
       <View style={styles.shopCardContainer}>
-        <FlatList
+        <SwipeListView
           alwaysBounceVertical={false}
           data={shops}
           style={styles.flatList}
+          disableRightSwipe={true}
           renderItem={(shop) => {
             return (
               <ShopCard
                 shop={shop.item}
                 id={shop.item.id}
+                itemDelete={openDeleteItemModal}
                 listProgress={props.route.params.list.progress}
                 addItem={openAddItemModal}
                 showPhoto={openPhotoModal}
               />
             );
           }}
-        ></FlatList>
+          renderHiddenItem={renderHiddenItem}
+          rightOpenValue={-75}
+        />
         <FAB
           icon="plus"
           color={theme.colors.tertiary}
@@ -363,6 +458,52 @@ const ShoppingList = (props) => {
             Add
           </Button>
         </MonkeyModal>
+        <MonkeyModal
+          visible={deleteItemModalVisible}
+          hideModal={hideDeleteItemModal}
+          modalContentStyle={styles.modalContentStyle}
+          modalContainerStyle={styles.modalContainer}
+          title={`Confirm to delete an item ${itemNameToDelete}`}
+        >
+          <Button
+            style={styles.deleteButton}
+            onPress={confirmItemDelete}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Delete item
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={hideDeleteItemModal}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Cancel
+          </Button>
+        </MonkeyModal>
+
+        <MonkeyModal
+          visible={deleteShopModalVisible}
+          hideModal={hideDeleteShopModal}
+          modalContentStyle={styles.modalContentStyle}
+          modalContainerStyle={styles.modalContainer}
+          title={`Confirm to delete a shop ${shopNameToDelete}`}
+        >
+          <Button
+            style={styles.deleteButton}
+            onPress={confirmShopDelete}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Delete item
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={hideDeleteShopModal}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Cancel
+          </Button>
+        </MonkeyModal>
+
         <CameraModal
           visible={cameraVisible}
           hideModal={hideCamera}
