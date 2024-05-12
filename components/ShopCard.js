@@ -120,6 +120,7 @@ const ShopCard = (props) => {
                 return (
                   <ListItem
                     item={item}
+                    itemDelete={props.itemDelete}
                     setPhoto={props.showPhoto}
                     shopName={props.shop.name}
                   />

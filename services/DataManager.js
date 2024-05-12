@@ -375,6 +375,10 @@ class DataManager {
   async deleteShopLocal(shopId) {
     return this.localdb.deleteShop(shopId);
   }
+
+  async deleteItemLocal(itemId) {
+    return this.localdb.deleteItem(itemId);
+  }
 }
 
 const useDataManager = () => {

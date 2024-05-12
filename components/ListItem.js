@@ -4,7 +4,7 @@ import useDataManager from "../services/DataManager";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
 
-const ListItem = ({ item, setPhoto, shopName }) => {
+const ListItem = ({ item, setPhoto, shopName, itemDelete }) => {
   const theme = useTheme();
   const [checked, setChecked] = React.useState(item.item.checked);
   console.log(item);
@@ -78,6 +78,9 @@ const ListItem = ({ item, setPhoto, shopName }) => {
     <TouchableOpacity
       onPress={(e) => {
         itemOnPress();
+      }}
+      onLongPress={(e) => {
+        itemDelete(item.item.id, item.item.name);
       }}
     >
       <Card style={styles.itemCard}>

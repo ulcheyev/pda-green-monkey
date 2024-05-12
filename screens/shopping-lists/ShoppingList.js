@@ -38,6 +38,10 @@ const ShoppingList = (props) => {
   const [pictureToSave, setPictureToSave] = useState("");
   const [photoModal, setPhotoModal] = useState("");
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
+  const [itemIdToDelete, setItemIdToDelete] = useState();
+  const [itemNameToDelete, setItemNameToDelete] = useState("");
+
+  const [deleteItemModalVisible, setDeleteItemModalVisible] = useState(false);
 
   const utils = useUtils();
   const theme = useTheme();
@@ -141,7 +145,31 @@ const ShoppingList = (props) => {
     unitButtonLabel: {
       color: theme.colors.primary,
     },
+    deleteButton: {
+      backgroundColor: "red",
+    },
   });
+
+  const hideDeleteItemModal = () => {
+    setDeleteItemModalVisible(false);
+    setItemIdToDelete();
+    setItemNameToDelete("");
+  };
+
+  const openDeleteItemModal = (itemId, itemName) => {
+    console.log("Called delete item");
+    setItemIdToDelete(itemId);
+    console.log(itemIdToDelete);
+    setItemNameToDelete(itemName);
+    setDeleteItemModalVisible(true);
+  };
+
+  const confirmDelete = () => {
+    dataManager.deleteItemLocal(itemIdToDelete).then(() => refreshShops());
+    setItemIdToDelete();
+    setItemNameToDelete("");
+    setDeleteItemModalVisible(false);
+  };
 
   const fabOnPress = () => {
     setVisible(true);
@@ -325,6 +353,7 @@ const ShoppingList = (props) => {
               <ShopCard
                 shop={shop.item}
                 id={shop.item.id}
+                itemDelete={openDeleteItemModal}
                 listProgress={props.route.params.list.progress}
                 addItem={openAddItemModal}
                 showPhoto={openPhotoModal}
@@ -359,6 +388,28 @@ const ShoppingList = (props) => {
             labelStyle={styles.buttonTitleStyle}
           >
             Add
+          </Button>
+        </MonkeyModal>
+        <MonkeyModal
+          visible={deleteItemModalVisible}
+          hideModal={hideDeleteItemModal}
+          modalContentStyle={styles.modalContentStyle}
+          modalContainerStyle={styles.modalContainer}
+          title={`Confirm to delete an item ${itemNameToDelete}`}
+        >
+          <Button
+            style={styles.deleteButton}
+            onPress={confirmDelete}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Delete item
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={hideDeleteItemModal}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Cancel
           </Button>
         </MonkeyModal>
         <CameraModal
