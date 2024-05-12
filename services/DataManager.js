@@ -34,6 +34,20 @@ class DataManager {
     return this.instance;
   }
 
+  formatDate(date) {
+    // Get month, day, and year
+    var month = date.getMonth() + 1; // Months are zero based
+    var day = date.getDate();
+    var year = date.getFullYear();
+
+    // Add leading zeros if necessary
+    month = month < 10 ? "0" + month : month;
+    day = day < 10 ? "0" + day : day;
+
+    // Return formatted date
+    return month + "-" + day + "-" + year;
+  }
+
   constructor() {
     console.log(
       "CALLLED DM CONSTRUCTOR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
@@ -213,6 +227,7 @@ class DataManager {
         item.measure,
         item.name,
         item.photo,
+        item.price,
         item.id,
       );
       return i;
@@ -224,6 +239,16 @@ class DataManager {
     return notificationSQL.rows._array.map((n) => {
       let notification = new Notification(n.text, n.header, n.date);
       return notification;
+    });
+  }
+
+  convertToGroupedByShop(group) {
+    return group.rows._array.map((item) => {
+      const d = {
+        value: item.total_price,
+        label: item.shop,
+      };
+      return d;
     });
   }
 
@@ -330,6 +355,21 @@ class DataManager {
     return this.localdb
       .getNotifications()
       .then((notification) => this.convertToNotification(notification));
+  }
+
+  async getPurchasesGroupedByShopLocal(dateFrom, dateTo) {
+    return this.localdb
+      .getPurchasesGroupedByShop(dateFrom, dateTo)
+      .then((res) => this.convertToGroupedByShop(res));
+  }
+
+  async incrementPurchasePrice(shop, price) {
+    console.log(`Incrementing price for ${shop}`);
+    const date = this.formatDate(new Date());
+    console.log(date);
+    this.localdb
+      .incrementPurchasePrice(shop, date, price)
+      .then(() => console.log("Incremented "));
   }
 }
 

@@ -4,9 +4,10 @@ import useDataManager from "../services/DataManager";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
 
-const ListItem = ({ item, setPhoto }) => {
+const ListItem = ({ item, setPhoto, shopName }) => {
   const theme = useTheme();
   const [checked, setChecked] = React.useState(item.item.checked);
+  console.log(item);
   const dataManager = useDataManager();
   const styles = StyleSheet.create({
     itemCard: {
@@ -50,9 +51,13 @@ const ListItem = ({ item, setPhoto }) => {
 
   const itemOnPress = () => {
     console.log(item.item.id);
+    console.log(shopName);
     dataManager
       .changeItemCheckedLocal(item.item.id, !checked)
       .then(() => setChecked(!checked));
+    if (!checked) {
+      dataManager.incrementPurchasePrice(shopName, item.item.price);
+    }
   };
 
   var photo;
@@ -69,7 +74,6 @@ const ListItem = ({ item, setPhoto }) => {
   } else {
     photo = <></>;
   }
-  console.log(item.item);
   return (
     <TouchableOpacity
       onPress={(e) => {

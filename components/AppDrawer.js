@@ -12,6 +12,7 @@ import {
 import HelpPage from "../screens/help/HelpPage";
 import useUtils from "../utils/Utils";
 import useDataManager from "../services/DataManager";
+import StatisticsPage from "../screens/statistics/StatisticsPage";
 import Settings from "../screens/settings/Settings";
 
 const screens = [
@@ -47,7 +48,7 @@ const screens = [
     name: "Statistics",
     label: "Statistics",
     icon: "poll",
-    component: ShoppingLists,
+    component: StatisticsPage,
     show: true,
   },
 ];

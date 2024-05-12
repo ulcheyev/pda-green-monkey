@@ -1,6 +1,6 @@
 class Purchase {
-  constructor(item, shop) {
-    this.item = item;
+  constructor(price, shop) {
+    this.price = price;
     this.shop = shop;
     this.date = Date().toDateString();
     this.user = User.getUserFromContext();
