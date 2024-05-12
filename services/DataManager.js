@@ -371,6 +371,10 @@ class DataManager {
       .incrementPurchasePrice(shop, date, price)
       .then(() => console.log("Incremented "));
   }
+
+  async deleteShopLocal(shopId) {
+    return this.localdb.deleteShop(shopId);
+  }
 }
 
 const useDataManager = () => {
