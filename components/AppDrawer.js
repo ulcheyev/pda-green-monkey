@@ -12,6 +12,7 @@ import {
 import HelpPage from "../screens/help/HelpPage";
 import useUtils from "../utils/Utils";
 import useDataManager from "../services/DataManager";
+import Settings from "../screens/settings/Settings";
 
 const screens = [
   {
@@ -32,7 +33,7 @@ const screens = [
     name: "Settings",
     label: "Settings",
     icon: "cog",
-    component: ShoppingLists,
+    component: Settings,
     show: true,
   },
   {
