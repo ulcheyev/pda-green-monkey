@@ -1,20 +1,11 @@
 import { Switch, Text } from "react-native-paper";
 import { View } from "react-native";
 
-const SettingsItem = ({ title }) => {
+const SettingsItem = ({ containerStyles, title, name, onPress, enabled }) => {
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        borderWidth: 1,
-        borderColor: "red",
-        justifyContent: "center",
-        margin: 8,
-      }}
-    >
-      <Text>{title}</Text>
-      <Switch />
+    <View style={containerStyles}>
+      <Text style={{ fontSize: 16, flexGrow: 1, marginLeft: 5 }}>{title}</Text>
+      <Switch value={enabled} onValueChange={() => onPress(name, !enabled)} />
     </View>
   );
 };

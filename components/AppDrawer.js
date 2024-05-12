@@ -14,6 +14,8 @@ import useUtils from "../utils/Utils";
 import useDataManager from "../services/DataManager";
 import StatisticsPage from "../screens/statistics/StatisticsPage";
 import Settings from "../screens/settings/Settings";
+import { useSettings } from "../services/SettingsContext";
+import { useEffect } from "react";
 
 const screens = [
   {
@@ -56,6 +58,7 @@ const screens = [
 const CustomDrawerContent = (props) => {
   const dataManager = useDataManager();
   const theme = useTheme();
+  const { settings } = useSettings();
   const styles = StyleSheet.create({
     allItemsContainer: {
       flex: 1,
@@ -81,6 +84,7 @@ const CustomDrawerContent = (props) => {
       marginTop: 20,
     },
   });
+
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.allItemsContainer}>
@@ -127,6 +131,7 @@ const AppDrawer = () => {
       flexDirection: "column",
     },
   });
+
   return (
     <Drawer.Navigator
       screenOptions={{

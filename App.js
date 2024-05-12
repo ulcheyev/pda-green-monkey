@@ -5,6 +5,7 @@ import { PaperProvider } from "react-native-paper";
 import useTheme from "./styles/AppTheme";
 import AppDrawer from "./components/AppDrawer";
 import ChangesProvider from "./services/ChangesProvider";
+import { SettingsProvider } from "./services/SettingsContext";
 
 function App() {
   const theme = useTheme();
@@ -12,7 +13,9 @@ function App() {
     <NavigationContainer>
       <PaperProvider theme={theme}>
         <ChangesProvider>
-          <AppDrawer />
+          <SettingsProvider>
+            <AppDrawer />
+          </SettingsProvider>
         </ChangesProvider>
       </PaperProvider>
     </NavigationContainer>

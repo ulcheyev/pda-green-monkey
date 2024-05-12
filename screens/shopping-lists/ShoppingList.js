@@ -17,8 +17,10 @@ import useDataManager from "../../services/DataManager";
 import CameraModal from "../../components/CameraModal";
 import PhotoPreview from "../../components/PhotoPreview";
 import { Camera, CameraType } from "expo-camera";
+import { useSettings } from "../../services/SettingsContext";
 
 const ShoppingList = (props) => {
+  const { saveSetting } = useSettings();
   const [visible, setVisible] = useState(false);
   const [addShopName, setAddShopName] = React.useState("");
   const [shopToAddId, setShopToAddId] = React.useState("");

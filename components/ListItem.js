@@ -3,11 +3,12 @@ import { Avatar, Card, Icon, Text, useTheme } from "react-native-paper";
 import useDataManager from "../services/DataManager";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
+import { useSettings } from "../services/SettingsContext";
 
 const ListItem = ({ item, setPhoto, shopName }) => {
   const theme = useTheme();
+  const { settings } = useSettings();
   const [checked, setChecked] = React.useState(item.item.checked);
-  console.log(item);
   const dataManager = useDataManager();
   const styles = StyleSheet.create({
     itemCard: {
@@ -74,6 +75,13 @@ const ListItem = ({ item, setPhoto, shopName }) => {
   } else {
     photo = <></>;
   }
+
+  const getItemRightSideText = () => {
+    return `${item.item.quantity} ${item.item.measure} ${
+      settings.autoPrice ? `- ${item.item.quantity * item.item.price}$` : ""
+    }`;
+  };
+
   return (
     <TouchableOpacity
       onPress={(e) => {
@@ -105,7 +113,7 @@ const ListItem = ({ item, setPhoto, shopName }) => {
               <View style={styles.horizontalContainer}>
                 {photo}
                 <View style={styles.verticalContainer}>
-                  <Text>{`${item.item.quantity} ${item.item.measure}`}</Text>
+                  <Text>{getItemRightSideText()}</Text>
                 </View>
               </View>
             </View>
