@@ -4,10 +4,12 @@ import useDataManager from "../services/DataManager";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import React from "react";
 import { useSettings } from "../services/SettingsContext";
+import useUtils from "../utils/Utils";
 
 const ListItem = ({ item, setPhoto, shopName, itemDelete }) => {
   const theme = useTheme();
   const { settings } = useSettings();
+  const utils = useUtils();
   const [checked, setChecked] = React.useState(item.item.checked);
   const dataManager = useDataManager();
   const styles = StyleSheet.create({
@@ -51,14 +53,21 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete }) => {
   });
 
   const itemOnPress = () => {
-    console.log(item.item.id);
-    console.log(shopName);
-    dataManager
-      .changeItemCheckedLocal(item.item.id, !checked)
-      .then(() => setChecked(!checked));
-    if (!checked) {
-      dataManager.incrementPurchasePrice(shopName, item.item.price);
-    }
+    utils.checkAuth().then((user) => {
+      if (user) {
+        const currItem = item.item;
+        currItem.checked = !checked;
+        dataManager.updateItem(currItem);
+        setChecked(!checked);
+      } else {
+        dataManager
+          .changeItemCheckedLocal(item.item.id, !checked)
+          .then(() => setChecked(!checked));
+        if (!checked) {
+          dataManager.incrementPurchasePrice(shopName, item.item.price);
+        }
+      }
+    });
   };
 
   var photo;

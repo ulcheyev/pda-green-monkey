@@ -334,6 +334,32 @@ class DataManager {
     }
   }
 
+  async updateItem(item) {
+    console.log(item);
+
+    const itemRef = doc(db, "items", `${item.id}`);
+    const batch = writeBatch(db);
+
+    batch.set(
+      itemRef,
+      {
+        name: item.name,
+        measure: item.measure,
+        price: item.price,
+        checked: item.checked,
+        quantity: item.quantity,
+      },
+      { merge: true },
+    );
+
+    try {
+      await batch.commit();
+      console.log("Item was updated successfully");
+    } catch (error) {
+      console.error("Failed to update item:", error);
+    }
+  }
+
   async updateListName(list, newName) {
     const q = query(
       collection(db, "lists"),
