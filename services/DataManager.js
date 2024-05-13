@@ -94,18 +94,18 @@ class DataManager {
   //     return item;
   //   });
   // };
-  // addItemToShopInListId = (shop, listId, item) => {
-  //   testData = testData.map((list) => {
-  //     if (list.id == listId) {
-  //       list.shop = list.shops.map((shop) => {
-  //         if (shop.name == shop) {
-  //           shop.items.push(item);
-  //         }
-  //       });
-  //     }
-  //     return list;
-  //   });
-  // };
+  addItemToShopInListId = (shop, listId, item) => {
+    testData = testData.map((list) => {
+      if (list.id == listId) {
+        list.shop = list.shops.map((shop) => {
+          if (shop.name == shop) {
+            shop.items.push(item);
+          }
+        });
+      }
+      return list;
+    });
+  };
 
   register(user) {
     return createUserWithEmailAndPassword(auth, user.email, user.password);
@@ -378,6 +378,19 @@ class DataManager {
 
   async deleteItemLocal(itemId) {
     return this.localdb.deleteItem(itemId);
+  }
+
+  async incrementListProgressLocal(shopId) {
+    console.log("INCREMENTING PROG");
+    return this.localdb.incrementProgress(shopId);
+  }
+
+  async decrementListProgressLocal(shopId) {
+    return this.localdb.decrementProgress(shopId);
+  }
+
+  async deleteListLocal(listId) {
+    this.localdb.deleteList(listId);
   }
 }
 

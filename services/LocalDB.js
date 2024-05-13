@@ -39,7 +39,9 @@ class LocalDB {
     const listQuery = `
      CREATE TABLE IF NOT EXISTS Lists (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT
+        name TEXT,
+        progress INT default 0,
+        total INT default 0
      )
     `;
 
@@ -270,7 +272,52 @@ class LocalDB {
     });
   };
 
+  incrementProgress = async (listId) => {
+    const updateQuery =
+      "UPDATE Lists SET progress = (progress + 1) WHERE id = ?";
+    console.log(shop);
+    this.localdatabase.transaction((tx) => {
+      tx.executeSql(
+        updateQuery,
+        [listId],
+        (tx, r) => {
+          console.log(r);
+          console.log("incremented prgress");
+        },
+        console.error,
+      );
+    });
+  };
+
+  decrementProgress = async (listId) => {
+    const updateQuery =
+      "UPDATE Lists SET progress = (progress - 1) WHERE id = ?";
+    console.log(shop);
+    this.localdatabase.transaction((tx) => {
+      tx.executeSql(
+        updateQuery,
+        [listId],
+        (tx, r) => {
+          console.log(r);
+          console.log("decremented progress");
+        },
+        console.error,
+      );
+    });
+  };
+
   deleteShop = async (shopId) => {
+    this.localdatabase.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM Lists WHERE shopId = ?",
+        [shopId],
+        (txObt, result) => {
+          console.log("Deleted items shop :)");
+          resolve(result);
+        },
+        console.error,
+      );
+    });
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
         tx.executeSql(
@@ -278,6 +325,35 @@ class LocalDB {
           [shopId],
           (txObt, result) => {
             console.log("Deleted shop :)");
+            resolve(result);
+          },
+          console.error,
+        );
+      }),
+    );
+  };
+
+  deleteList = async (listId) => {
+    this.localdatabase
+      .transaction((tx) => {
+        tx.executeSql(
+          "SELECR id FROM Shops WHERE listId = ?",
+          [listId],
+          (txObt, result) => {
+            console.log("Deleted list :)");
+            resolve(result);
+          },
+          console.error,
+        );
+      })
+      .then((res) => res.rows._array.map((id) => this.deleteShop(id)));
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          "DELETE FROM Lists WHERE id = ?",
+          [listId],
+          (txObt, result) => {
+            console.log("Deleted list :)");
             resolve(result);
           },
           console.error,

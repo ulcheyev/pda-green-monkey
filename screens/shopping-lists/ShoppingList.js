@@ -19,6 +19,7 @@ import PhotoPreview from "../../components/PhotoPreview";
 import { Camera, CameraType } from "expo-camera";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { list } from "firebase/storage";
 
 const ShoppingList = (props) => {
   const [visible, setVisible] = useState(false);
@@ -170,8 +171,8 @@ const ShoppingList = (props) => {
       justifyContent: "flex-end",
       top: 0,
       width: 75,
-      borderBottomRightRadius: 7,
-      borderTopRightRadius: 7,
+      borderBottomRightRadius: 10,
+      borderTopRightRadius: 10,
     },
     backRightBtnRight: {
       backgroundColor: "red",
@@ -189,7 +190,7 @@ const ShoppingList = (props) => {
     setItemNameToDelete("");
   };
 
-  const openDeleteItemModal = (itemId, itemName) => {
+  const openDeleteItemModal = (itemId, itemName, itemChecked) => {
     console.log("Called delete item");
     setItemIdToDelete(itemId);
     console.log(itemIdToDelete);
@@ -197,8 +198,18 @@ const ShoppingList = (props) => {
     setDeleteItemModalVisible(true);
   };
 
+  const incrementTotalItems = () => {
+    setTotalItems(totalItems + 1);
+  };
+
+  const decrementTotalItems = () => {
+    setTotalItems(totalItems - 1);
+  };
+
   const confirmItemDelete = () => {
-    dataManager.deleteItemLocal(itemIdToDelete).then(() => refreshShops());
+    dataManager.deleteItemLocal(itemIdToDelete).then(() => {
+      refreshShops();
+    });
     setItemIdToDelete();
     setItemNameToDelete("");
     setDeleteItemModalVisible(false);
