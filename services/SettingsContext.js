@@ -1,10 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  activateKeepAwake,
-  activateKeepAwakeAsync,
-  deactivateKeepAwake,
-} from "expo-keep-awake";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 
 const SettingsContext = createContext(undefined, undefined);
 

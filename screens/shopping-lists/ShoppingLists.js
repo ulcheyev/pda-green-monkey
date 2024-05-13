@@ -194,7 +194,6 @@ const ShoppingListsContent = (props) => {
     utils.checkAuth().then((user) => {
       if (user) {
         const newList = {
-          id: lists.length + 1,
           name: creationListName,
           isTemplate: false,
           progress: 0,
@@ -203,7 +202,8 @@ const ShoppingListsContent = (props) => {
         };
         dataManager
           .saveList(newList)
-          .then(() => {
+          .then((r) => {
+            newList.id = r;
             setLists([...lists, newList]);
           })
           .finally(() => {
@@ -246,7 +246,6 @@ const ShoppingListsContent = (props) => {
             .getListsLocal()
             .then((r) => {
               console.log("Got result");
-              console.log(r);
               setLists(r);
             })
             .catch((e) => console.error(e));

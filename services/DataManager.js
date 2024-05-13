@@ -21,6 +21,8 @@ import {
   where,
   deleteDoc,
   updateDoc,
+  writeBatch,
+  arrayUnion,
 } from "firebase/firestore";
 import LocalDB from "./LocalDB";
 
@@ -141,7 +143,9 @@ class DataManager {
       if (shopData && shopData.items) {
         const itemsData = [];
         const promises = shopData.items.map((itemRef) => {
-          return getDoc(itemRef).then((res) => res.data());
+          return getDoc(itemRef).then((res) => {
+            return { id: res.id, ...res.data() };
+          });
         });
         return await Promise.all(promises);
       } else {
@@ -161,7 +165,7 @@ class DataManager {
         const promises = listData.shops.map((shopRef) => {
           return getDoc(shopRef).then(async (res) => {
             const items = await this.getShopItems(res);
-            return { ...res.data(), items };
+            return { id: res.id, ...res.data(), items };
           });
         });
         return Promise.all(promises);
@@ -184,7 +188,7 @@ class DataManager {
     const shopsPromises = [];
     listDocRef.forEach((doc) => {
       const promise = this.getListShops(doc).then((shopsData) => {
-        return { ...doc.data(), shops: shopsData };
+        return { id: doc.id, ...doc.data(), shops: shopsData };
       });
       shopsPromises.push(promise);
     });
@@ -278,6 +282,58 @@ class DataManager {
     }
   }
 
+  async updateList(list) {
+    const listRef = doc(db, "lists", `${list.id}`);
+    const batch = writeBatch(db);
+
+    batch.set(
+      listRef,
+      {
+        name: list.name,
+        isTemplate: list.isTemplate,
+        progress: list.progress,
+        uid: list.uid,
+      },
+      { merge: true },
+    );
+
+    for (const shop of list.shops) {
+      if (!shop.id) {
+        const newShopRef = await addDoc(collection(db, "shops"), {
+          name: shop.name,
+          items: [],
+        });
+        shop.id = newShopRef.id;
+      }
+      const shopRef = doc(db, "shops", `${shop.id}`);
+
+      for (const item of shop.items) {
+        if (!item.id) {
+          const newItemRef = await addDoc(collection(db, "items"), {
+            name: item.name,
+            measure: item.measure,
+            price: item.price,
+            checked: item.checked,
+            quantity: item.quantity,
+          });
+          item.id = newItemRef.id;
+        }
+
+        const itemRef = doc(db, "items", `${item.id}`);
+        batch.update(shopRef, { items: arrayUnion(itemRef) });
+      }
+
+      batch.update(listRef, { shops: arrayUnion(shopRef) });
+    }
+
+    try {
+      await batch.commit();
+      console.log("List and all associated shops were updated successfully");
+    } catch (error) {
+      console.error("Failed to update list and its relations:", error);
+    }
+  }
+
   async updateListName(list, newName) {
     const q = query(
       collection(db, "lists"),
@@ -304,17 +360,19 @@ class DataManager {
   }
 
   async deleteList(list) {
-    const q = query(
-      collection(db, "lists"),
-      where("uid", "==", this.getCurrentUser().uid),
-      where("id", "==", list.id),
-    );
+    const listRef = doc(db, "lists", `${list.id}`);
 
     try {
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach(async (doc) => {
-        await deleteDoc(doc.ref);
-      });
+      const listDoc = await getDoc(listRef);
+      if (
+        listDoc.exists() &&
+        listDoc.data().uid === this.getCurrentUser().uid
+      ) {
+        await deleteDoc(listRef);
+        console.log("Document successfully deleted.");
+      } else {
+        console.log("No document found or user mismatch.");
+      }
     } catch (error) {
       console.error("Error removing document: ", error);
     }
