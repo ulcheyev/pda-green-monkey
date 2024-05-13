@@ -199,7 +199,6 @@ class DataManager {
   async convertToShops(shop) {
     let shops = [];
 
-    console.log("Started converting");
     for (let i = 0; i < shop.rows.length; ++i) {
       let s = shop.rows._array[i];
       let lists = await this.getShopItemsLocal(s.id);
@@ -212,14 +211,12 @@ class DataManager {
   }
 
   convertToShopsSync(shop) {
-    console.log("COnverting to shops loc");
     this.shop_wait = true;
     let shops = this.convertToShops(shop);
     return shops;
   }
 
   convertToItem(itemSQL) {
-    console.log("Converting to items");
     return itemSQL.rows._array.map((item) => {
       let i = new Item(
         item.quantity,
@@ -321,7 +318,6 @@ class DataManager {
   }
 
   async saveItemLocal(name, price, quantity, checked, measure, shopId, photo) {
-    console.log("DM works");
     return this.localdb.saveItem(
       name,
       price,
@@ -342,7 +338,6 @@ class DataManager {
   }
 
   async saveShopLocal(name, listId) {
-    console.log("Creating sshop local");
     //console.log(this.localdb)
     return this.localdb.createShop(listId, name);
   }
@@ -364,9 +359,7 @@ class DataManager {
   }
 
   async incrementPurchasePrice(shop, price) {
-    console.log(`Incrementing price for ${shop}`);
     const date = this.formatDate(new Date());
-    console.log(date);
     this.localdb
       .incrementPurchasePrice(shop, date, price)
       .then(() => console.log("Incremented "));
@@ -381,7 +374,6 @@ class DataManager {
   }
 
   async incrementListProgressLocal(shopId) {
-    console.log("INCREMENTING PROG");
     return this.localdb.incrementProgress(shopId);
   }
 

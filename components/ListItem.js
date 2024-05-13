@@ -49,8 +49,6 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete, updateProgress }) => {
   });
 
   const itemOnPress = () => {
-    console.log(item.item.id);
-    console.log(shopName);
     dataManager
       .changeItemCheckedLocal(item.item.id, !checked)
       .then(() => setChecked(!checked));

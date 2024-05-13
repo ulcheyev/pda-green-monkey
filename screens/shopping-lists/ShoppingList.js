@@ -64,9 +64,7 @@ const ShoppingList = (props) => {
       if (user) {
         console.log("User is online");
       } else {
-        console.log("Getting shops local");
         dataManager.getShopsLocal(props.route.params.list.id).then((res) => {
-          console.log("Got shops");
           setShops(res);
         });
       }
@@ -191,9 +189,7 @@ const ShoppingList = (props) => {
   };
 
   const openDeleteItemModal = (itemId, itemName, itemChecked) => {
-    console.log("Called delete item");
     setItemIdToDelete(itemId);
-    console.log(itemIdToDelete);
     setItemNameToDelete(itemName);
     setDeleteItemModalVisible(true);
   };
@@ -222,9 +218,7 @@ const ShoppingList = (props) => {
   };
 
   const openDeleteShopModal = (shopId, shopName) => {
-    console.log("Called delete shop");
     setShopIdToDelete(shopId);
-    console.log(shopIdToDelete);
     setShopNameToDelete(shopName);
     setDeleteShopModalVisible(true);
   };
@@ -278,14 +272,15 @@ const ShoppingList = (props) => {
     };
     utils.checkAuth().then((user) => {
       if (!user) {
-        console.log("Adding shop local");
         dataManager
           .saveShopLocal(newShop.name, props.route.params.list.id)
           .then(() => refreshShops())
-          .catch((e) => console.error(e))
-          .finally(() => console.log("Help me"));
+          .catch((e) => console.error(e));
       } else {
         setShops([...shops, newShop]);
+        const l = props.route.params.list;
+        l.shops = shops;
+        l = dataManager.saveList(l);
       }
     });
     setAddShopName("");
@@ -302,10 +297,8 @@ const ShoppingList = (props) => {
   };
 
   const toggleCamera = async () => {
-    console.log("Wwaiting for statsu");
     const { status } = await Camera.requestCameraPermissionsAsync();
 
-    console.log(status);
     if (status === "granted") {
       setCameraVisible(true);
     } else {
@@ -367,7 +360,6 @@ const ShoppingList = (props) => {
       setUnitError(false);
     }
     if (!error) {
-      console.log("Added item");
       hideAddItemModal();
       //{ id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 2 }
       utils.checkAuth().then((user) => {
@@ -384,7 +376,6 @@ const ShoppingList = (props) => {
             },
           );
         } else {
-          console.log("Adding local");
           dataManager
             .saveItemLocal(
               addItemName,
