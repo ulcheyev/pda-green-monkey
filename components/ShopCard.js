@@ -77,10 +77,6 @@ const ShopCard = (props) => {
     }
     return progress;
   };
-
-  console.log(`SHOP ID ID ${props.shop.id}`);
-  console.log(props.shop.name);
-
   return (
     <TouchableWithoutFeedback onPress={toggleExpand}>
       <View style={styles.shopListAccordion}>
@@ -120,6 +116,7 @@ const ShopCard = (props) => {
                 return (
                   <ListItem
                     item={item}
+                    updateProgress={props.updateProgress}
                     itemDelete={props.itemDelete}
                     setPhoto={props.showPhoto}
                     shopName={props.shop.name}

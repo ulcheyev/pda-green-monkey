@@ -19,6 +19,7 @@ import PhotoPreview from "../../components/PhotoPreview";
 import { Camera, CameraType } from "expo-camera";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { list } from "firebase/storage";
 
 const ShoppingList = (props) => {
   const utils = useUtils();
@@ -65,9 +66,7 @@ const ShoppingList = (props) => {
       if (user) {
         console.log("User is online");
       } else {
-        console.log("Getting shops local");
         dataManager.getShopsLocal(props.route.params.list.id).then((res) => {
-          console.log("Got shops");
           setShops(res);
         });
       }
@@ -172,8 +171,8 @@ const ShoppingList = (props) => {
       justifyContent: "flex-end",
       top: 0,
       width: 75,
-      borderBottomRightRadius: 7,
-      borderTopRightRadius: 7,
+      borderBottomRightRadius: 10,
+      borderTopRightRadius: 10,
     },
     backRightBtnRight: {
       backgroundColor: "red",
@@ -191,16 +190,26 @@ const ShoppingList = (props) => {
     setItemNameToDelete("");
   };
 
-  const openDeleteItemModal = (itemId, itemName) => {
-    console.log("Called delete item");
+  const openDeleteItemModal = (itemId, itemName, itemChecked) => {
     setItemIdToDelete(itemId);
-    console.log(itemIdToDelete);
     setItemNameToDelete(itemName);
     setDeleteItemModalVisible(true);
   };
 
+  const incrementTotalItems = () => {
+    setTotalItems(totalItems + 1);
+  };
+
+  const decrementTotalItems = () => {
+    setTotalItems(totalItems - 1);
+  };
+
   const confirmItemDelete = () => {
-    dataManager.deleteItemLocal(itemIdToDelete).then(() => refreshShops());
+    console.log(`Deleting item ${itemIdToDelete}`);
+    dataManager.deleteItemLocal(itemIdToDelete).then(() => {
+      console.log("Refreshing shops");
+      refreshShops();
+    });
     setItemIdToDelete();
     setItemNameToDelete("");
     setDeleteItemModalVisible(false);
@@ -213,9 +222,7 @@ const ShoppingList = (props) => {
   };
 
   const openDeleteShopModal = (shopId, shopName) => {
-    console.log("Called delete shop");
     setShopIdToDelete(shopId);
-    console.log(shopIdToDelete);
     setShopNameToDelete(shopName);
     setDeleteShopModalVisible(true);
   };
@@ -269,12 +276,10 @@ const ShoppingList = (props) => {
     };
     utils.checkAuth().then((user) => {
       if (!user) {
-        console.log("Adding shop local");
         dataManager
           .saveShopLocal(newShop.name, props.route.params.list.id)
           .then(() => refreshShops())
-          .catch((e) => console.error(e))
-          .finally(() => console.log("Help me"));
+          .catch((e) => console.error(e));
       } else {
         let spreadShops = [...shops, newShop];
         let list = props.route.params.list;
@@ -296,10 +301,8 @@ const ShoppingList = (props) => {
   };
 
   const toggleCamera = async () => {
-    console.log("Wwaiting for statsu");
     const { status } = await Camera.requestCameraPermissionsAsync();
 
-    console.log(status);
     if (status === "granted") {
       setCameraVisible(true);
     } else {
@@ -374,7 +377,6 @@ const ShoppingList = (props) => {
       setUnitError(false);
     }
     if (!error) {
-      console.log("Added item");
       hideAddItemModal();
       //{ id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 2 }
       utils.checkAuth().then((user) => {
@@ -396,7 +398,6 @@ const ShoppingList = (props) => {
           updateListShopsWith(list, copyOfShop);
           dataManager.updateList(list).then(() => setShops(list.shops));
         } else {
-          console.log("Adding local");
           dataManager
             .saveItemLocal(
               addItemName,

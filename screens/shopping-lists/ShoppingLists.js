@@ -258,7 +258,13 @@ const ShoppingListsContent = (props) => {
   );
 
   const handleDelete = (item) => {
-    dataManager.deleteList(item).then((r) => handleRefresh());
+    utils.checkAuth().then((user) => {
+      if (user) {
+        dataManager.deleteList(item).then((r) => handleRefresh());
+      } else {
+        dataManager.deleteListLocal(item.id).then((r) => handleRefresh());
+      }
+    });
   };
 
   const renderHiddenItem = (data) => (

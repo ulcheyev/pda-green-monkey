@@ -38,7 +38,7 @@ const HelpPage = () => {
       }}
     >
       <Stack.Screen
-        name={"Help"}
+        name={"HelpContent"}
         component={HelpPageContent}
         style={style.card}
       />

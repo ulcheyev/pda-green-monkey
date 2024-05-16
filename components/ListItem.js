@@ -6,7 +6,7 @@ import React from "react";
 import { useSettings } from "../services/SettingsContext";
 import useUtils from "../utils/Utils";
 
-const ListItem = ({ item, setPhoto, shopName, itemDelete }) => {
+const ListItem = ({ item, setPhoto, shopName, itemDelete, updateProgress }) => {
   const theme = useTheme();
   const { settings } = useSettings();
   const utils = useUtils();
@@ -53,6 +53,7 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete }) => {
   });
 
   const itemOnPress = () => {
+
     utils.checkAuth().then((user) => {
       if (user) {
         const currItem = item.item;
@@ -68,6 +69,7 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete }) => {
         }
       }
     });
+
   };
 
   var photo;
@@ -97,7 +99,7 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete }) => {
         itemOnPress();
       }}
       onLongPress={(e) => {
-        itemDelete(item.item.id, item.item.name);
+        itemDelete(item.item.id, item.item.name, item.item.checked);
       }}
     >
       <Card style={styles.itemCard}>
