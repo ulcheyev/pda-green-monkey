@@ -309,11 +309,10 @@ class LocalDB {
   deleteShop = async (shopId) => {
     this.localdatabase.transaction((tx) => {
       tx.executeSql(
-        "DELETE FROM Lists WHERE shopId = ?",
+        "DELETE FROM Items WHERE shopId = ?",
         [shopId],
         (txObt, result) => {
           console.log("Deleted items shop :)");
-          resolve(result);
         },
         console.error,
       );
@@ -334,19 +333,18 @@ class LocalDB {
   };
 
   deleteList = async (listId) => {
-    this.localdatabase
-      .transaction((tx) => {
-        tx.executeSql(
-          "SELECR id FROM Shops WHERE listId = ?",
-          [listId],
-          (txObt, result) => {
-            console.log("Deleted list :)");
-            resolve(result);
-          },
-          console.error,
-        );
-      })
-      .then((res) => res.rows._array.map((id) => this.deleteShop(id)));
+    this.localdatabase.transaction((tx) => {
+      tx.executeSql(
+        "SELECT id FROM Shops WHERE listId = ?",
+        [listId],
+        (txObt, result) => {
+          console.log("Selected shops for list");
+          result.rows._array.map((id) => this.deleteShop(id));
+        },
+        console.error,
+      );
+    });
+    console.log("Deleting list itself");
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
         tx.executeSql(
@@ -366,7 +364,7 @@ class LocalDB {
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
         tx.executeSql(
-          "DELETE FROM Items WHERE id = ?",
+          "DELETE FROM Items WHERE id = ?;",
           [itemId],
           (txObt, result) => {
             console.log("Deleted item :)");

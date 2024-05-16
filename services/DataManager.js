@@ -382,7 +382,7 @@ class DataManager {
   }
 
   async deleteListLocal(listId) {
-    this.localdb.deleteList(listId);
+    return this.localdb.deleteList(listId);
   }
 }
 

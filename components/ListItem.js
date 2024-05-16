@@ -55,8 +55,6 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete, updateProgress }) => {
     if (!checked) {
       dataManager.incrementPurchasePrice(shopName, item.item.price);
     }
-
-    updateProgress(!checked);
   };
 
   var photo;

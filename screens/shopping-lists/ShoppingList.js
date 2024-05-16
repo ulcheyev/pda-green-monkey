@@ -203,7 +203,9 @@ const ShoppingList = (props) => {
   };
 
   const confirmItemDelete = () => {
+    console.log(`Deleting item ${itemIdToDelete}`);
     dataManager.deleteItemLocal(itemIdToDelete).then(() => {
+      console.log("Refreshing shops");
       refreshShops();
     });
     setItemIdToDelete();
