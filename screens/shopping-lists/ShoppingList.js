@@ -22,6 +22,10 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { list } from "firebase/storage";
 
 const ShoppingList = (props) => {
+  const utils = useUtils();
+  const theme = useTheme();
+  const dataManager = useDataManager();
+
   const [visible, setVisible] = useState(false);
   const [addShopName, setAddShopName] = React.useState("");
   const [shopToAddId, setShopToAddId] = React.useState("");
@@ -29,7 +33,7 @@ const ShoppingList = (props) => {
   const [shops, setShops] = useState(props.route.params.list.shops);
   const [shopToAddItem, setShopToAddItem] = useState("");
   const [addItemName, setAddItemName] = useState("");
-  const [addItemPrice, setAddItemPrice] = useState("0");
+  const [addItemPrice, setAddItemPrice] = useState(0);
   const [addItemQuantity, setAddItemQuantity] = useState("1");
   const [addItemUnit, setAddItemUnit] = useState("pts");
   const [addItemModalVisible, setAddItemModalVisible] = useState(false);
@@ -44,14 +48,12 @@ const ShoppingList = (props) => {
   const [itemIdToDelete, setItemIdToDelete] = useState();
   const [itemNameToDelete, setItemNameToDelete] = useState("");
   const [deleteItemModalVisible, setDeleteItemModalVisible] = useState(false);
-
+  const [totalProgress, setTotalProgress] = useState(
+    utils.getListItemsSize(props.route.params.list),
+  );
   const [shopIdToDelete, setShopIdToDelete] = useState();
   const [shopNameToDelete, setShopNameToDelete] = useState("");
   const [deleteShopModalVisible, setDeleteShopModalVisible] = useState(false);
-
-  const utils = useUtils();
-  const theme = useTheme();
-  const dataManager = useDataManager();
 
   const units = ["g", "kg", "ml", "L", "pts"];
 
@@ -279,10 +281,10 @@ const ShoppingList = (props) => {
           .then(() => refreshShops())
           .catch((e) => console.error(e));
       } else {
-        setShops([...shops, newShop]);
-        const l = props.route.params.list;
-        l.shops = shops;
-        l = dataManager.saveList(l);
+        let spreadShops = [...shops, newShop];
+        let list = props.route.params.list;
+        list.shops = spreadShops;
+        dataManager.updateList(list).then((r) => setShops([...spreadShops]));
       }
     });
     setAddShopName("");
@@ -333,6 +335,19 @@ const ShoppingList = (props) => {
     </View>
   );
 
+  const updateListShopsWith = (list, toPaste) => {
+    const existingIndex = list.shops.findIndex((i) => i.id === toPaste.id);
+    if (existingIndex > -1) {
+      list.shops = [
+        ...list.shops.slice(0, existingIndex),
+        toPaste,
+        ...list.shops.slice(existingIndex + 1),
+      ];
+    } else {
+      return [...list.shops, toPaste];
+    }
+  };
+
   const addItem = () => {
     /**
      * Validate name, quantity, price, unit */
@@ -366,17 +381,22 @@ const ShoppingList = (props) => {
       //{ id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 2 }
       utils.checkAuth().then((user) => {
         if (user) {
-          dataManager.addItemToShopInListId(
-            shopToAddItem,
-            props.route.params.list.id,
-            {
-              id: 12312,
-              name: addItemName,
-              measure: addItemUnit,
-              checked: false,
-              quantity: addItemQuantity,
-            },
+          const list = props.route.params.list;
+          const newItem = {
+            name: addItemName,
+            measure: addItemUnit,
+            price: addItemPrice,
+            checked: false,
+            quantity: addItemQuantity,
+          };
+          let indexOfShop = list.shops.findIndex(
+            (shop) => shop.id === shopToAddId,
           );
+          const newItems = [...list.shops[indexOfShop].items, newItem];
+          const copyOfShop = { ...list.shops[indexOfShop] };
+          copyOfShop.items = newItems;
+          updateListShopsWith(list, copyOfShop);
+          dataManager.updateList(list).then(() => setShops(list.shops));
         } else {
           dataManager
             .saveItemLocal(

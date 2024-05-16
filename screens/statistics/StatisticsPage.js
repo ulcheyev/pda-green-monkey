@@ -208,7 +208,7 @@ const StatisticsPage = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName={"Help"}
+      initialRouteName={"Statistics"}
       screenOptions={{
         header: (headerProps) => <Header {...headerProps} />,
       }}

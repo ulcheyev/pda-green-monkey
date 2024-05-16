@@ -17,6 +17,7 @@ import { useChanges } from "../../services/ChangesProvider";
 import { useFocusEffect } from "@react-navigation/native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useSettings } from "../../services/SettingsContext";
 
 const ShoppingListsContent = (props) => {
   const [addListModalVisible, setAddListModalVisible] = useState(false);
@@ -26,6 +27,7 @@ const ShoppingListsContent = (props) => {
 
   const dataManager = useDataManager();
   const changesProvider = useChanges();
+  const { settings } = useSettings();
   const utils = useUtils();
   const [lists, setLists] = useState([]);
   const [isError, setIsError] = useState(false);
@@ -192,7 +194,6 @@ const ShoppingListsContent = (props) => {
     utils.checkAuth().then((user) => {
       if (user) {
         const newList = {
-          id: lists.length + 1,
           name: creationListName,
           isTemplate: false,
           progress: 0,
@@ -201,7 +202,8 @@ const ShoppingListsContent = (props) => {
         };
         dataManager
           .saveList(newList)
-          .then(() => {
+          .then((r) => {
+            newList.id = r;
             setLists([...lists, newList]);
           })
           .finally(() => {
@@ -244,7 +246,6 @@ const ShoppingListsContent = (props) => {
             .getListsLocal()
             .then((r) => {
               console.log("Got result");
-              console.log(r);
               setLists(r);
             })
             .catch((e) => console.error(e));
@@ -285,6 +286,7 @@ const ShoppingListsContent = (props) => {
         <SwipeListView
           data={lists}
           disableRightSwipe={true}
+          disableLeftSwipe={!settings?.swipeToDelete}
           renderItem={(lizt) => (
             <ListCard
               handleRefresh={handleRefresh}
