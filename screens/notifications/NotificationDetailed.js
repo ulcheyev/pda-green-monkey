@@ -14,6 +14,7 @@ const NotificationDetailed = (props) => {
       marginTop: 20,
       backgroundColor: theme.colors.secondary,
       minHeight: 300,
+      width: "100%",
     },
   });
 
@@ -21,10 +22,10 @@ const NotificationDetailed = (props) => {
   //console.log(notification.route.params.notification)
   return (
     <View style={styles.notificationContainer}>
-      <Text variant="headlineLarge">{notification.name}</Text>
+      <Text variant="headlineLarge">{notification.header}</Text>
       <Card style={styles.detailedText}>
         <Card.Content>
-          <Text variant="bodyLarge">{notification.detailedText}</Text>
+          <Text variant="bodyLarge">{notification.text}</Text>
         </Card.Content>
       </Card>
     </View>

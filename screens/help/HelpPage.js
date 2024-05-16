@@ -1,6 +1,7 @@
-import { Card, Text } from "react-native-paper";
+import { Card, Text, useTheme } from "react-native-paper";
 import Header from "../../components/Header";
 import { createStackNavigator } from "@react-navigation/stack";
+import { StyleSheet } from "react-native";
 
 const HelpPageContent = () => {
   return (
@@ -22,8 +23,13 @@ const HelpPageContent = () => {
 };
 
 const HelpPage = () => {
+  const theme = useTheme();
   const Stack = createStackNavigator();
-
+  const style = StyleSheet.create({
+    card: {
+      backgroundColor: theme.colors.tertiary,
+    },
+  });
   return (
     <Stack.Navigator
       initialRouteName={"Help"}
@@ -31,7 +37,11 @@ const HelpPage = () => {
         header: (headerProps) => <Header {...headerProps} />,
       }}
     >
-      <Stack.Screen name={"Help"} component={HelpPageContent} />
+      <Stack.Screen
+        name={"Help"}
+        component={HelpPageContent}
+        style={style.card}
+      />
     </Stack.Navigator>
   );
 };

@@ -78,6 +78,9 @@ const ShopCard = (props) => {
     return progress;
   };
 
+  console.log(`SHOP ID ID ${props.shop.id}`);
+  console.log(props.shop.name);
+
   return (
     <TouchableWithoutFeedback onPress={toggleExpand}>
       <View style={styles.shopListAccordion}>
@@ -114,7 +117,14 @@ const ShopCard = (props) => {
               alwaysBounceVertical={false}
               data={props.shop.items}
               renderItem={(item) => {
-                return <ListItem item={item} />;
+                return (
+                  <ListItem
+                    item={item}
+                    itemDelete={props.itemDelete}
+                    setPhoto={props.showPhoto}
+                    shopName={props.shop.name}
+                  />
+                );
               }}
             />
             <AddItemButton shop={props.shop} addItem={props.addItem} />

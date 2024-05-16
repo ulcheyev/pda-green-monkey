@@ -14,8 +14,17 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import MonkeyModal from "../../components/MonkeyModal";
 import useDataManager from "../../services/DataManager";
+import CameraModal from "../../components/CameraModal";
+import PhotoPreview from "../../components/PhotoPreview";
+import { Camera, CameraType } from "expo-camera";
+import { SwipeListView } from "react-native-swipe-list-view";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ShoppingList = (props) => {
+  const utils = useUtils();
+  const theme = useTheme();
+  const dataManager = useDataManager();
+
   const [visible, setVisible] = useState(false);
   const [addShopName, setAddShopName] = React.useState("");
   const [shopToAddId, setShopToAddId] = React.useState("");
@@ -23,7 +32,7 @@ const ShoppingList = (props) => {
   const [shops, setShops] = useState(props.route.params.list.shops);
   const [shopToAddItem, setShopToAddItem] = useState("");
   const [addItemName, setAddItemName] = useState("");
-  const [addItemPrice, setAddItemPrice] = useState("0");
+  const [addItemPrice, setAddItemPrice] = useState(0);
   const [addItemQuantity, setAddItemQuantity] = useState("1");
   const [addItemUnit, setAddItemUnit] = useState("pts");
   const [addItemModalVisible, setAddItemModalVisible] = useState(false);
@@ -31,9 +40,19 @@ const ShoppingList = (props) => {
   const [quantityError, setQuantityError] = useState(false);
   const [priceError, setPriceError] = useState(false);
   const [unitError, setUnitError] = useState(false);
-  const utils = useUtils();
-  const theme = useTheme();
-  const dataManager = useDataManager();
+  const [cameraVisible, setCameraVisible] = useState(false);
+  const [pictureToSave, setPictureToSave] = useState("");
+  const [photoModal, setPhotoModal] = useState("");
+  const [photoModalVisible, setPhotoModalVisible] = useState(false);
+  const [itemIdToDelete, setItemIdToDelete] = useState();
+  const [itemNameToDelete, setItemNameToDelete] = useState("");
+  const [deleteItemModalVisible, setDeleteItemModalVisible] = useState(false);
+  const [totalProgress, setTotalProgress] = useState(
+    utils.getListItemsSize(props.route.params.list),
+  );
+  const [shopIdToDelete, setShopIdToDelete] = useState();
+  const [shopNameToDelete, setShopNameToDelete] = useState("");
+  const [deleteShopModalVisible, setDeleteShopModalVisible] = useState(false);
 
   const units = ["g", "kg", "ml", "L", "pts"];
 
@@ -133,7 +152,80 @@ const ShoppingList = (props) => {
     unitButtonLabel: {
       color: theme.colors.primary,
     },
+    deleteButton: {
+      backgroundColor: "red",
+    },
+    rowBack: {
+      alignItems: "center",
+      backgroundColor: "red",
+      margin: 7,
+      marginTop: 20,
+      flex: 1,
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      paddingLeft: 15,
+      borderRadius: 15,
+    },
+    backRightBtn: {
+      alignItems: "center",
+      bottom: 0,
+      justifyContent: "flex-end",
+      top: 0,
+      width: 75,
+      borderBottomRightRadius: 7,
+      borderTopRightRadius: 7,
+    },
+    backRightBtnRight: {
+      backgroundColor: "red",
+      flex: 1,
+      height: "100%",
+      flexDirection: "column",
+      justifyContent: "center",
+      right: 0,
+    },
   });
+
+  const hideDeleteItemModal = () => {
+    setDeleteItemModalVisible(false);
+    setItemIdToDelete();
+    setItemNameToDelete("");
+  };
+
+  const openDeleteItemModal = (itemId, itemName) => {
+    console.log("Called delete item");
+    setItemIdToDelete(itemId);
+    console.log(itemIdToDelete);
+    setItemNameToDelete(itemName);
+    setDeleteItemModalVisible(true);
+  };
+
+  const confirmItemDelete = () => {
+    dataManager.deleteItemLocal(itemIdToDelete).then(() => refreshShops());
+    setItemIdToDelete();
+    setItemNameToDelete("");
+    setDeleteItemModalVisible(false);
+  };
+
+  const hideDeleteShopModal = () => {
+    setDeleteShopModalVisible(false);
+    setItemIdToDelete();
+    setItemNameToDelete("");
+  };
+
+  const openDeleteShopModal = (shopId, shopName) => {
+    console.log("Called delete shop");
+    setShopIdToDelete(shopId);
+    console.log(shopIdToDelete);
+    setShopNameToDelete(shopName);
+    setDeleteShopModalVisible(true);
+  };
+
+  const confirmShopDelete = () => {
+    dataManager.deleteShopLocal(shopIdToDelete).then(() => refreshShops());
+    setShopIdToDelete();
+    setShopNameToDelete("");
+    setDeleteShopModalVisible(false);
+  };
 
   const fabOnPress = () => {
     setVisible(true);
@@ -156,10 +248,10 @@ const ShoppingList = (props) => {
     setPriceError(false);
     setQuantityError(false);
     setUnitError(false);
+    setPictureToSave("");
   };
 
   const openAddItemModal = (shop) => {
-    console.log(shop);
     setAddItemModalVisible(true);
     setShopToAddItem(shop.name);
     setShopToAddId(shop.id);
@@ -184,7 +276,10 @@ const ShoppingList = (props) => {
           .catch((e) => console.error(e))
           .finally(() => console.log("Help me"));
       } else {
-        setShops([...shops, newShop]);
+        let spreadShops = [...shops, newShop];
+        let list = props.route.params.list;
+        list.shops = spreadShops;
+        dataManager.updateList(list).then((r) => setShops([...spreadShops]));
       }
     });
     setAddShopName("");
@@ -198,6 +293,56 @@ const ShoppingList = (props) => {
 
   const validateEmpty = (text) => {
     return text.trim().length === 0;
+  };
+
+  const toggleCamera = async () => {
+    console.log("Wwaiting for statsu");
+    const { status } = await Camera.requestCameraPermissionsAsync();
+
+    console.log(status);
+    if (status === "granted") {
+      setCameraVisible(true);
+    } else {
+      Alert.alert("Access denied");
+    }
+  };
+
+  const hideCamera = () => {
+    setCameraVisible(false);
+  };
+
+  const openPhotoModal = (photo) => {
+    setPhotoModal(photo);
+    setPhotoModalVisible(true);
+  };
+
+  const hidePhotoModal = () => {
+    setPhotoModal("");
+    setPhotoModalVisible(false);
+  };
+
+  const renderHiddenItem = (data) => (
+    <View style={styles.rowBack}>
+      <TouchableOpacity
+        style={[styles.backRightBtn, styles.backRightBtnRight]}
+        onPress={() => openDeleteShopModal(data.item.id, data.item.name)}
+      >
+        <Text style={styles.backTextWhite}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const updateListShopsWith = (list, toPaste) => {
+    const existingIndex = list.shops.findIndex((i) => i.id === toPaste.id);
+    if (existingIndex > -1) {
+      list.shops = [
+        ...list.shops.slice(0, existingIndex),
+        toPaste,
+        ...list.shops.slice(existingIndex + 1),
+      ];
+    } else {
+      return [...list.shops, toPaste];
+    }
   };
 
   const addItem = () => {
@@ -230,22 +375,26 @@ const ShoppingList = (props) => {
     }
     if (!error) {
       console.log("Added item");
-      console.log(addItemName);
       hideAddItemModal();
       //{ id: 1, name: "Item 1", measure: "kg", checked: true, quantity: 2 }
       utils.checkAuth().then((user) => {
         if (user) {
-          dataManager.addItemToShopInListId(
-            shopToAddItem,
-            props.route.params.list.id,
-            {
-              id: 12312,
-              name: addItemName,
-              measure: addItemUnit,
-              checked: false,
-              quantity: addItemQuantity,
-            },
+          const list = props.route.params.list;
+          const newItem = {
+            name: addItemName,
+            measure: addItemUnit,
+            price: addItemPrice,
+            checked: false,
+            quantity: addItemQuantity,
+          };
+          let indexOfShop = list.shops.findIndex(
+            (shop) => shop.id === shopToAddId,
           );
+          const newItems = [...list.shops[indexOfShop].items, newItem];
+          const copyOfShop = { ...list.shops[indexOfShop] };
+          copyOfShop.items = newItems;
+          updateListShopsWith(list, copyOfShop);
+          dataManager.updateList(list).then(() => setShops(list.shops));
         } else {
           console.log("Adding local");
           dataManager
@@ -256,7 +405,7 @@ const ShoppingList = (props) => {
               false,
               addItemUnit,
               shopToAddId,
-              "",
+              pictureToSave,
             )
             .then(() => refreshShops());
         }
@@ -283,21 +432,26 @@ const ShoppingList = (props) => {
         height={28}
       />
       <View style={styles.shopCardContainer}>
-        <FlatList
+        <SwipeListView
           alwaysBounceVertical={false}
           data={shops}
           style={styles.flatList}
+          disableRightSwipe={true}
           renderItem={(shop) => {
             return (
               <ShopCard
                 shop={shop.item}
                 id={shop.item.id}
+                itemDelete={openDeleteItemModal}
                 listProgress={props.route.params.list.progress}
                 addItem={openAddItemModal}
+                showPhoto={openPhotoModal}
               />
             );
           }}
-        ></FlatList>
+          renderHiddenItem={renderHiddenItem}
+          rightOpenValue={-75}
+        />
         <FAB
           icon="plus"
           color={theme.colors.tertiary}
@@ -328,13 +482,71 @@ const ShoppingList = (props) => {
           </Button>
         </MonkeyModal>
         <MonkeyModal
+          visible={deleteItemModalVisible}
+          hideModal={hideDeleteItemModal}
+          modalContentStyle={styles.modalContentStyle}
+          modalContainerStyle={styles.modalContainer}
+          title={`Confirm to delete an item ${itemNameToDelete}`}
+        >
+          <Button
+            style={styles.deleteButton}
+            onPress={confirmItemDelete}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Delete item
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={hideDeleteItemModal}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Cancel
+          </Button>
+        </MonkeyModal>
+
+        <MonkeyModal
+          visible={deleteShopModalVisible}
+          hideModal={hideDeleteShopModal}
+          modalContentStyle={styles.modalContentStyle}
+          modalContainerStyle={styles.modalContainer}
+          title={`Confirm to delete a shop ${shopNameToDelete}`}
+        >
+          <Button
+            style={styles.deleteButton}
+            onPress={confirmShopDelete}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Delete item
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={hideDeleteShopModal}
+            labelStyle={styles.buttonTitleStyle}
+          >
+            Cancel
+          </Button>
+        </MonkeyModal>
+
+        <CameraModal
+          visible={cameraVisible}
+          hideModal={hideCamera}
+          setPicture={setPictureToSave}
+        ></CameraModal>
+
+        <PhotoPreview
+          hideModal={hidePhotoModal}
+          photo={photoModal}
+          visible={photoModalVisible}
+        />
+
+        <MonkeyModal
           visible={addItemModalVisible}
           hideModal={hideAddItemModal}
           modalContentStyle={styles.modalContentStyle}
           modalContainerStyle={styles.modalContainer}
           title={`Add item to ${shopToAddItem}`}
           leftSideHeaderItems={
-            <Button style={styles.addPhotoButton}>
+            <Button style={styles.addPhotoButton} onPress={toggleCamera}>
               <Icon source="camera" size={17}></Icon>
             </Button>
           }

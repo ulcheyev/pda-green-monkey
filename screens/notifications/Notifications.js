@@ -1,14 +1,16 @@
 import DataManager from "../../services/DataManager";
 import NotificationCard from "../../components/NotificationCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useTheme } from "react-native-paper";
 import { createStackNavigator } from "@react-navigation/stack";
 import NotificationDetailed from "./NotificationDetailed";
 import Header from "../../components/Header";
+import useDataManager from "../../services/DataManager";
 
 const Notifications = () => {
   const Stack = createStackNavigator();
+
   return (
     <Stack.Navigator
       initialRouteName={"All notifications"}
@@ -29,10 +31,14 @@ const Notifications = () => {
 };
 
 const NotificationCardsContent = (props) => {
-  const dataManager = new DataManager();
-  const [notificationsData, setNotificationsData] = useState(
-    dataManager.getTestNotifications(),
-  );
+  const dataManager = useDataManager();
+  const [notificationsData, setNotificationsData] = useState([]);
+
+  useEffect(() => {
+    dataManager.getNotificaitonsLocal().then((res) => {
+      setNotificationsData(res);
+    });
+  }, []);
 
   const theme = useTheme();
 

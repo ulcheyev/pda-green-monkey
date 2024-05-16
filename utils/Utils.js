@@ -12,7 +12,7 @@ class Utils {
   getListItemsSize(lizt) {
     let size = 0;
     for (let shop of lizt.shops) {
-      size += shop.items.length;
+      size += shop?.items?.length;
     }
     return size;
   }
