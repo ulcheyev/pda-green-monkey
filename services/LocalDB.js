@@ -427,6 +427,35 @@ class LocalDB {
     );
   };
 
+  saveNotification = async (date, name, text) => {
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          "INSERT INTO Notifications (header, text, date) VALUES (?, ?, ?)",
+          [name, text, date],
+          (txObt, result) => {
+            resolve(result);
+          },
+          console.error,
+        );
+      }),
+    );
+  };
+
+  deleteNotification = async (id) => {
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          "DELETE FROM Notifications WHERE id = ?",
+          [id],
+          (txObt, result) => {
+            resolve(result);
+          },
+        );
+      }),
+    );
+  };
+
   getPurchasesGroupedByShop = async (dateFrom, dateTo) => {
     console.log("Executiong query");
     console.log(dateFrom);

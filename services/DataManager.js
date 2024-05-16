@@ -25,6 +25,7 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import LocalDB from "./LocalDB";
+import { he } from "react-native-paper-dates";
 
 class DataManager {
   static instance;
@@ -467,6 +468,15 @@ class DataManager {
 
   async deleteListLocal(listId) {
     return this.localdb.deleteList(listId);
+  }
+  async saveNotificationLocal(head, text) {
+    const date = new Date();
+    const d = this.formatDate(date);
+    return this.localdb.saveNotification(date, head, text);
+  }
+
+  async deleteNotification(id) {
+    return this.localdb.deleteNotification(id);
   }
 }
 

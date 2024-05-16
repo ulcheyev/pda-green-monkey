@@ -1,7 +1,7 @@
 import { Button, FAB, Text, TextInput, useTheme } from "react-native-paper";
 import ListCard from "../../components/ListCard";
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import useDataManager from "../../services/DataManager";
 import MonkeyModal from "../../components/MonkeyModal";
@@ -18,6 +18,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSettings } from "../../services/SettingsContext";
+import * as Notifications from "expo-notifications";
+import * as Permissions from "expo-permissions";
 
 const ShoppingListsContent = (props) => {
   const [addListModalVisible, setAddListModalVisible] = useState(false);
@@ -166,6 +168,38 @@ const ShoppingListsContent = (props) => {
       }
     });
   };
+
+  async function registerForPushNotificationsAsync() {
+    console.log("Asking for permission");
+    const { status } = await Notifications.getPermissionsAsync();
+    console.log(status);
+    if (status !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      return;
+    }
+  }
+
+  async function scheduleNotification() {
+    const notificaionTitle = "Hello please return to our application",
+      notificationBody =
+        "My developer  is starving, i need to generate money for him";
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: notificaionTitle,
+        body: notificationBody,
+      },
+      trigger: {
+        seconds: 3600, // 5 minutes in seconds
+      },
+    }).then(
+      dataManager.saveNotificationLocal(notificaionTitle, notificationBody),
+    );
+  }
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+    scheduleNotification();
+  }, []);
 
   const hideAddItemModal = () => {
     setAddListModalVisible(false);
