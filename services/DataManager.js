@@ -59,57 +59,6 @@ class DataManager {
     this.shop_wait = false;
   }
 
-  getTestData = () => {
-    let dataList = testData.map((dataItem) => {
-      const l = new List(dataItem.name, dataItem.id);
-      l.shops = dataItem.shops.map((shopItem) => {
-        var s = new Shop(shopItem.name);
-        s.items = shopItem.items.map((itemItem) => {
-          var item = new Item(
-            itemItem.quantity,
-            itemItem.checked,
-            itemItem.measure,
-            itemItem.name,
-            itemItem.photo,
-          );
-          return item;
-        });
-        return s;
-      });
-      l.updateProgress();
-      return l;
-    });
-
-    return dataList;
-  };
-
-  getTestNotifications = () => {
-    return testNotifications.map(
-      (notificationItem) =>
-        new Notification(notificationItem.detailedText, notificationItem.name),
-    );
-  };
-  // changeTestNotificationCheckedById = (id) => {
-  //   testNotifications = testNotifications.map((item) => {
-  //     if (item.id == id) {
-  //       item.checked = !item.checked;
-  //     }
-  //     return item;
-  //   });
-  // };
-  addItemToShopInListId = (shop, listId, item) => {
-    testData = testData.map((list) => {
-      if (list.id == listId) {
-        list.shop = list.shops.map((shop) => {
-          if (shop.name == shop) {
-            shop.items.push(item);
-          }
-        });
-      }
-      return list;
-    });
-  };
-
   register(user) {
     return createUserWithEmailAndPassword(auth, user.email, user.password);
   }
@@ -128,9 +77,7 @@ class DataManager {
         navigation.pop();
         navigation.navigate("Login");
       })
-      .catch((error) => {
-        // ignored
-      });
+      .catch((error) => {});
   }
 
   getCurrentUser() {
@@ -237,7 +184,6 @@ class DataManager {
   }
 
   convertToNotification(notificationSQL) {
-    console.log("Converting to items");
     return notificationSQL.rows._array.map((n) => {
       let notification = new Notification(n.id, n.text, n.header, n.date);
       return notification;
@@ -259,7 +205,6 @@ class DataManager {
   }
 
   async getShopItemsLocal(shopId) {
-    //console.log(`Getting items for shop ${shopId}`);
     return this.localdb
       .getShopItems(shopId)
       .then((res) => this.convertToItem(res));
@@ -333,8 +278,6 @@ class DataManager {
   }
 
   async updateItem(item) {
-    console.log(item);
-
     const itemRef = doc(db, "items", `${item.id}`);
     const batch = writeBatch(db);
 
@@ -423,7 +366,6 @@ class DataManager {
   }
 
   async saveShopLocal(name, listId) {
-    //console.log(this.localdb)
     return this.localdb.createShop(listId, name);
   }
 
@@ -443,27 +385,12 @@ class DataManager {
       .then((res) => this.convertToGroupedByShop(res));
   }
 
-  async incrementPurchasePrice(shop, price) {
-    const date = this.formatDate(new Date());
-    this.localdb
-      .incrementPurchasePrice(shop, date, price)
-      .then(() => console.log("Incremented "));
-  }
-
   async deleteShopLocal(shopId) {
     return this.localdb.deleteShop(shopId);
   }
 
   async deleteItemLocal(itemId) {
     return this.localdb.deleteItem(itemId);
-  }
-
-  async incrementListProgressLocal(shopId) {
-    return this.localdb.incrementProgress(shopId);
-  }
-
-  async decrementListProgressLocal(shopId) {
-    return this.localdb.decrementProgress(shopId);
   }
 
   async deleteListLocal(listId) {

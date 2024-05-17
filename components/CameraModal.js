@@ -43,7 +43,6 @@ const CameraModal = (props) => {
   const takePicture = async () => {
     console.log("Taking picture");
     const photo = await camera.takePictureAsync();
-    console.log(photo);
     setPreviewVisible(true);
     //setStartCamera(false)
     setCapturedImage(photo);

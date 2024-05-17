@@ -262,7 +262,6 @@ const ShoppingList = (props) => {
     setAddItemModalVisible(true);
     setShopToAddItem(shop.name);
     setShopToAddId(shop.id);
-    //console.log(`Adding item to shop ${shop.name}`);
   };
 
   const addShop = () => {
