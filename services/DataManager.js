@@ -239,7 +239,7 @@ class DataManager {
   convertToNotification(notificationSQL) {
     console.log("Converting to items");
     return notificationSQL.rows._array.map((n) => {
-      let notification = new Notification(n.text, n.header, n.date);
+      let notification = new Notification(n.id, n.text, n.header, n.date);
       return notification;
     });
   }
@@ -475,7 +475,7 @@ class DataManager {
     return this.localdb.saveNotification(date, head, text);
   }
 
-  async deleteNotification(id) {
+  async deleteNotificationLocal(id) {
     return this.localdb.deleteNotification(id);
   }
 }

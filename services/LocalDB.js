@@ -449,6 +449,7 @@ class LocalDB {
           "DELETE FROM Notifications WHERE id = ?",
           [id],
           (txObt, result) => {
+            console.log("Deleted notif");
             resolve(result);
           },
         );
