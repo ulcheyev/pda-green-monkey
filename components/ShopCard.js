@@ -9,8 +9,11 @@ import {
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
 import AddItemButton from "./AddItemButton";
+import dataManager from "../services/DataManager";
+import useDataManager from "../services/DataManager";
 
 const ShopCard = (props) => {
+  const dataManager = useDataManager();
   const [expanded, setExpanded] = useState(false);
   const animationValue = useState(new Animated.Value(0))[0];
   const theme = useTheme();
@@ -31,7 +34,7 @@ const ShopCard = (props) => {
     animationStyle: {
       height: animationValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, 300],
+        outputRange: [0, 320],
       }),
       overflow: "hidden",
     },
@@ -44,6 +47,9 @@ const ShopCard = (props) => {
     accordionTitle: {
       fontSize: 20,
       flexGrow: 1,
+    },
+    itemList: {
+      maxHeight: 253,
     },
   });
 
@@ -62,6 +68,7 @@ const ShopCard = (props) => {
       }).start();
     }
     setExpanded(!expanded);
+    props.onClick(props.shop);
   };
 
   const getTotal = () => {
@@ -77,8 +84,19 @@ const ShopCard = (props) => {
     }
     return progress;
   };
+
+  const handleShopDelete = () => {
+    if (!expanded) {
+      props.shopDelete(props.shop.id, props.shop.name);
+    }
+  };
+
   return (
-    <TouchableWithoutFeedback onPress={toggleExpand}>
+    <TouchableWithoutFeedback
+      onPress={toggleExpand}
+      onLongPress={handleShopDelete}
+      delayLongPress={500}
+    >
       <View style={styles.shopListAccordion}>
         <View style={styles.accordionTitleContainer}>
           <Text style={styles.accordionTitle}>{props.shop.name}</Text>
@@ -111,19 +129,20 @@ const ShopCard = (props) => {
           <View style={styles.itemsContainer}>
             <FlatList
               alwaysBounceVertical={false}
+              style={styles.itemList}
               data={props.shop.items}
               renderItem={(item) => {
                 return (
                   <ListItem
                     item={item}
-                    updateProgress={props.updateProgress}
                     itemDelete={props.itemDelete}
                     setPhoto={props.showPhoto}
                     shopName={props.shop.name}
+                    updateProgress={props.updateProgress}
                   />
                 );
               }}
-            />
+            ></FlatList>
             <AddItemButton shop={props.shop} addItem={props.addItem} />
           </View>
         </Animated.View>

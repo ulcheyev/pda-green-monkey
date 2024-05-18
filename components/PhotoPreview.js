@@ -10,7 +10,6 @@ import {
 import { StyleSheet } from "react-native";
 
 const PhotoPreview = ({ photo, hideModal, visible }) => {
-  console.log(visible);
   const styles = StyleSheet.create({
     backdrop: {
       backgroundColor: "rgba(0, 0, 0, 0.5)",

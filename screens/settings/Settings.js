@@ -47,7 +47,7 @@ const SettingsPage = () => {
       flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      maxHeight: 55,
+      height: 63,
       marginTop: 7,
       marginLeft: 15,
       borderRadius: 5,

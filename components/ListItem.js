@@ -53,23 +53,25 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete, updateProgress }) => {
   });
 
   const itemOnPress = () => {
-
     utils.checkAuth().then((user) => {
+      let isChecked = !checked;
       if (user) {
         const currItem = item.item;
-        currItem.checked = !checked;
-        dataManager.updateItem(currItem);
-        setChecked(!checked);
+        currItem.checked = isChecked;
+        dataManager.updateItem(currItem).then((r) => {
+          setChecked(isChecked);
+          updateProgress();
+        });
       } else {
-        dataManager
-          .changeItemCheckedLocal(item.item.id, !checked)
-          .then(() => setChecked(!checked));
-        if (!checked) {
+        dataManager.changeItemCheckedLocal(item.item.id, isChecked).then(() => {
+          setChecked(isChecked);
+          updateProgress();
+        });
+        if (isChecked) {
           dataManager.incrementPurchasePrice(shopName, item.item.price);
         }
       }
     });
-
   };
 
   var photo;

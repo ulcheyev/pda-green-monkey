@@ -25,6 +25,9 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import LocalDB from "./LocalDB";
+import { he } from "react-native-paper-dates";
+import useUtils from "../utils/Utils";
+import firebase from "firebase/compat";
 
 class DataManager {
   static instance;
@@ -56,58 +59,9 @@ class DataManager {
     );
     this.localdb = new LocalDB();
     this.shop_wait = false;
+    this.list_wait = false;
+    this.utils = useUtils();
   }
-
-  getTestData = () => {
-    let dataList = testData.map((dataItem) => {
-      const l = new List(dataItem.name, dataItem.id);
-      l.shops = dataItem.shops.map((shopItem) => {
-        var s = new Shop(shopItem.name);
-        s.items = shopItem.items.map((itemItem) => {
-          var item = new Item(
-            itemItem.quantity,
-            itemItem.checked,
-            itemItem.measure,
-            itemItem.name,
-            itemItem.photo,
-          );
-          return item;
-        });
-        return s;
-      });
-      l.updateProgress();
-      return l;
-    });
-
-    return dataList;
-  };
-
-  getTestNotifications = () => {
-    return testNotifications.map(
-      (notificationItem) =>
-        new Notification(notificationItem.detailedText, notificationItem.name),
-    );
-  };
-  // changeTestNotificationCheckedById = (id) => {
-  //   testNotifications = testNotifications.map((item) => {
-  //     if (item.id == id) {
-  //       item.checked = !item.checked;
-  //     }
-  //     return item;
-  //   });
-  // };
-  addItemToShopInListId = (shop, listId, item) => {
-    testData = testData.map((list) => {
-      if (list.id == listId) {
-        list.shop = list.shops.map((shop) => {
-          if (shop.name == shop) {
-            shop.items.push(item);
-          }
-        });
-      }
-      return list;
-    });
-  };
 
   register(user) {
     return createUserWithEmailAndPassword(auth, user.email, user.password);
@@ -158,6 +112,16 @@ class DataManager {
     }
   }
 
+  async getListShopsByListId(listId) {
+    const listRef = doc(db, "lists", listId);
+    const listDocSnap = await getDoc(listRef);
+    if (!listDocSnap.exists()) {
+      console.log("List document does not exist.");
+      return [];
+    }
+    return this.getListShops(listDocSnap);
+  }
+
   async getListShops(listDocSnap) {
     try {
       const listData = listDocSnap.data();
@@ -196,8 +160,16 @@ class DataManager {
     return await Promise.all(shopsPromises);
   }
 
-  convertToLists = (res) => {
-    return res.rows._array.map((item) => new List(item.name, item.id));
+  convertToLists = async (res) => {
+    let arr = [];
+    for (let i = 0; i < res.rows._array.length; ++i) {
+      const listsql = res.rows._array[i];
+      let l = new List(listsql.name, listsql.id);
+      let shops = await this.getShopsLocal(l.id);
+      l.shops = shops;
+      arr.push(l);
+    }
+    return arr;
   };
 
   async convertToShops(shop) {
@@ -236,14 +208,14 @@ class DataManager {
   }
 
   convertToNotification(notificationSQL) {
-    console.log("Converting to items");
     return notificationSQL.rows._array.map((n) => {
-      let notification = new Notification(n.text, n.header, n.date);
+      let notification = new Notification(n.id, n.text, n.header, n.date);
       return notification;
     });
   }
 
   convertToGroupedByShop(group) {
+    console.log(group.rows._array);
     return group.rows._array.map((item) => {
       const d = {
         value: item.total_price,
@@ -258,7 +230,6 @@ class DataManager {
   }
 
   async getShopItemsLocal(shopId) {
-    //console.log(`Getting items for shop ${shopId}`);
     return this.localdb
       .getShopItems(shopId)
       .then((res) => this.convertToItem(res));
@@ -277,6 +248,220 @@ class DataManager {
     } catch (error) {
       throw error;
     }
+  }
+
+  async updateItem(item) {
+    const itemRef = doc(db, "items", `${item.id}`);
+    const batch = writeBatch(db);
+
+    batch.set(
+      itemRef,
+      {
+        name: item.name,
+        measure: item.measure,
+        price: item.price,
+        checked: item.checked,
+        quantity: item.quantity,
+      },
+      { merge: true },
+    );
+
+    try {
+      await batch.commit();
+      console.log("Item was updated successfully");
+    } catch (error) {
+      console.error("Failed to update item:", error);
+    }
+  }
+
+  async incrementPurchasePrice(shop, price) {
+    const date = this.formatDate(new Date());
+    this.localdb
+      .incrementPurchasePrice(shop, date, price)
+      .then(() => console.log("Incremented "));
+  }
+
+  async saveItemLocal(name, price, quantity, checked, measure, shopId, photo) {
+    return this.localdb.saveItem(
+      name,
+      price,
+      quantity,
+      checked,
+      measure,
+      shopId,
+      photo,
+    );
+  }
+
+  async saveListLocal(name) {
+    return this.localdb.createList(name);
+  }
+
+  async changeItemCheckedLocal(itemId, checked) {
+    return this.localdb.changeItemChecked(itemId, checked);
+  }
+
+  async saveShopLocal(name, listId) {
+    return this.localdb.createShop(listId, name);
+  }
+
+  async uncheckAllItemsLocal(listId) {
+    return this.localdb.uncheckAllItems(listId);
+  }
+
+  async getNotificaitonsLocal() {
+    return this.localdb
+      .getNotifications()
+      .then((notification) => this.convertToNotification(notification));
+  }
+
+  async getPurchasesGroupedByShopLocal(dateFrom, dateTo) {
+    return this.localdb
+      .getPurchasesGroupedByShop(dateFrom, dateTo)
+      .then((res) => this.convertToGroupedByShop(res));
+  }
+
+  async deleteShopLocal(shopId) {
+    return this.localdb.deleteShop(shopId);
+  }
+
+  async deleteItemLocal(itemId) {
+    return this.localdb.deleteItem(itemId);
+  }
+
+  async deleteListLocal(listId) {
+    return this.localdb.deleteList(listId);
+  }
+  async saveNotificationLocal(head, text) {
+    const date = new Date();
+    const d = this.formatDate(date);
+    return this.localdb.saveNotification(date, head, text);
+  }
+
+  async deleteNotificationLocal(id) {
+    return this.localdb.deleteNotification(id);
+  }
+
+  deleteList(list) {
+    return this.utils.checkAuth().then((user) => {
+      if (user) {
+        return this.deleteDocumentWithSubcollections("lists", list.id, [
+          "shops",
+          "items",
+        ]);
+      } else {
+        return this.deleteListLocal(list.id);
+      }
+    });
+  }
+
+  deleteShop(shopId, listId) {
+    return this.utils.checkAuth().then((user) => {
+      if (user) {
+        return this.deleteDocumentWithSubcollections(
+          "shops",
+          shopId,
+          ["items"],
+          listId,
+          "lists",
+        );
+      } else {
+        return this.deleteShopLocal(shopId);
+      }
+    });
+  }
+
+  deleteItem(itemId, shopId) {
+    return this.utils.checkAuth().then((user) => {
+      if (user) {
+        return this.deleteDocumentWithSubcollections(
+          "items",
+          itemId,
+          [],
+          shopId,
+          "shops",
+        );
+      } else {
+        return this.deleteItemLocal(itemId);
+      }
+    });
+  }
+
+  /***
+   Note that subcollectionsToDelete is array of "tree" representation of subcollections of entity.
+   This array [one, two] means, that entity has this structure of subcollections REFERENCES:
+     main entity{
+     ones: [one references],
+     }
+     one {
+     twos: [two references]
+     }
+   ***/
+  async deleteDocumentWithSubcollections(
+    dbName,
+    id,
+    subcollectionsToDelete,
+    parentId = null,
+    parentDbName = null,
+  ) {
+    const docRef = doc(db, dbName, `${id}`);
+    try {
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        console.log("Document does not exist!");
+        return;
+      }
+
+      if (subcollectionsToDelete.length > 0) {
+        const subcollectionName = subcollectionsToDelete[0];
+        const subCollectionRefs = docSnap.data()[subcollectionName];
+
+        console.log(
+          `Processing ${subCollectionRefs.length} documents in ${subcollectionName}...`,
+        );
+
+        const deletePromises = subCollectionRefs.map((subDoc) =>
+          this.deleteDocumentWithSubcollections(
+            subcollectionName,
+            subDoc.id,
+            subcollectionsToDelete.slice(1),
+          ),
+        );
+
+        await Promise.all(deletePromises);
+      }
+
+      // update parent references
+      if (parentId && parentDbName) {
+        const parentDocRef = doc(db, parentDbName, `${parentId}`);
+        await updateDoc(parentDocRef, {
+          [dbName]: firebase.firestore.FieldValue.arrayRemove(docRef),
+        });
+        console.log(`Reference to ${dbName} removed from ${parentDocRef.path}`);
+      }
+
+      console.log(`Deleting main document: ${docRef.path}`);
+      await deleteDoc(docRef);
+      console.log(
+        `Document with path ${docRef.path} and all its subcollections have been deleted.`,
+      );
+    } catch (error) {
+      console.error("Error removing document: ", error);
+      throw new Error(
+        `Failed to delete document with path ${docRef.path}: ${error}`,
+      );
+    }
+  }
+
+  updateEntitySpecificField(dbName, id, field, newValue) {
+    const docRef = doc(db, dbName, `${id}`);
+    return updateDoc(docRef, {
+      [field]: newValue,
+    });
+  }
+
+  updateListName(list, newName) {
+    return this.updateEntitySpecificField("lists", list.id, "name", newName);
   }
 
   async updateList(list) {
@@ -331,142 +516,12 @@ class DataManager {
     }
   }
 
-  async updateItem(item) {
-    console.log(item);
-
-    const itemRef = doc(db, "items", `${item.id}`);
-    const batch = writeBatch(db);
-
-    batch.set(
-      itemRef,
-      {
-        name: item.name,
-        measure: item.measure,
-        price: item.price,
-        checked: item.checked,
-        quantity: item.quantity,
-      },
-      { merge: true },
-    );
-
-    try {
-      await batch.commit();
-      console.log("Item was updated successfully");
-    } catch (error) {
-      console.error("Failed to update item:", error);
-    }
+  async getListOverallItemsLocal(listId) {
+    return this.localdb.getListOverallItems(listId);
   }
 
-  async updateListName(list, newName) {
-    const q = query(
-      collection(db, "lists"),
-      where("uid", "==", this.getCurrentUser().uid),
-      where("id", "==", list.id),
-    );
-    // update name
-    try {
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        querySnapshot.forEach(async (document) => {
-          const docRef = document.ref;
-          await updateDoc(docRef, {
-            name: newName,
-          });
-        });
-        console.log("List name updated successfully");
-      } else {
-        console.log("No document found with the given ID and user ID.");
-      }
-    } catch (error) {
-      console.error("Error updating document:", error);
-    }
-  }
-
-  async deleteList(list) {
-    const listRef = doc(db, "lists", `${list.id}`);
-
-    try {
-      const listDoc = await getDoc(listRef);
-      if (
-        listDoc.exists() &&
-        listDoc.data().uid === this.getCurrentUser().uid
-      ) {
-        await deleteDoc(listRef);
-        console.log("Document successfully deleted.");
-      } else {
-        console.log("No document found or user mismatch.");
-      }
-    } catch (error) {
-      console.error("Error removing document: ", error);
-    }
-  }
-
-  async saveItemLocal(name, price, quantity, checked, measure, shopId, photo) {
-    return this.localdb.saveItem(
-      name,
-      price,
-      quantity,
-      checked,
-      measure,
-      shopId,
-      photo,
-    );
-  }
-
-  async saveListLocal(name) {
-    return this.localdb.createList(name);
-  }
-
-  async changeItemCheckedLocal(itemId, checked) {
-    return this.localdb.changeItemChecked(itemId, checked);
-  }
-
-  async saveShopLocal(name, listId) {
-    //console.log(this.localdb)
-    return this.localdb.createShop(listId, name);
-  }
-
-  async uncheckAllItemsLocal(listId) {
-    return this.localdb.uncheckAllItems(listId);
-  }
-
-  async getNotificaitonsLocal() {
-    return this.localdb
-      .getNotifications()
-      .then((notification) => this.convertToNotification(notification));
-  }
-
-  async getPurchasesGroupedByShopLocal(dateFrom, dateTo) {
-    return this.localdb
-      .getPurchasesGroupedByShop(dateFrom, dateTo)
-      .then((res) => this.convertToGroupedByShop(res));
-  }
-
-  async incrementPurchasePrice(shop, price) {
-    const date = this.formatDate(new Date());
-    this.localdb
-      .incrementPurchasePrice(shop, date, price)
-      .then(() => console.log("Incremented "));
-  }
-
-  async deleteShopLocal(shopId) {
-    return this.localdb.deleteShop(shopId);
-  }
-
-  async deleteItemLocal(itemId) {
-    return this.localdb.deleteItem(itemId);
-  }
-
-  async incrementListProgressLocal(shopId) {
-    return this.localdb.incrementProgress(shopId);
-  }
-
-  async decrementListProgressLocal(shopId) {
-    return this.localdb.decrementProgress(shopId);
-  }
-
-  async deleteListLocal(listId) {
-    return this.localdb.deleteList(listId);
+  async getListCheckedItemsLocal(listId) {
+    return this.localdb.getListCheckedItems(listId);
   }
 }
 

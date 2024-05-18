@@ -17,6 +17,18 @@ class Utils {
     return size;
   }
 
+  getListItemsCheckedSize(shops) {
+    let size = 0;
+    for (let shop of shops) {
+      for (let item of shop.items) {
+        if (item.checked) {
+          size++;
+        }
+      }
+    }
+    return size;
+  }
+
   checkAuth() {
     return new Promise((resolve, reject) => {
       const unsubscribe = auth.onAuthStateChanged(
@@ -32,8 +44,10 @@ class Utils {
   }
 }
 
+const INSTANCE = new Utils();
+
 const useUtils = () => {
-  return useMemo(() => new Utils(), []);
+  return INSTANCE;
 };
 
 export default useUtils;
