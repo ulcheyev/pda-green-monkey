@@ -8,6 +8,14 @@ an intuitive and user-friendly interface for easy creation and management of sho
 - Node.js v20.\* (tested on v20.9.0)
 - ExpoCLI (tested on v6.3.10)
 
+## Download the Mobile App
+
+For Android users, you can download our mobile application directly by clicking on the link below:
+
+[Download the Mobile App](APP)
+
+Ensure your device runs Android 5.0 or later to support the app.
+
 ## Expose locally
 
 1. **Install Node.js and npm**<br/>

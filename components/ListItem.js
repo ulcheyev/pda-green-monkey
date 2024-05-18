@@ -63,9 +63,10 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete, updateProgress }) => {
           updateProgress();
         });
       } else {
-        dataManager
-          .changeItemCheckedLocal(item.item.id, isChecked)
-          .then(() => setChecked(isChecked));
+        dataManager.changeItemCheckedLocal(item.item.id, isChecked).then(() => {
+          setChecked(isChecked);
+          updateProgress();
+        });
         if (isChecked) {
           dataManager.incrementPurchasePrice(shopName, item.item.price);
         }
