@@ -1,6 +1,6 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-
+import React, { useEffect, useRef } from "react";
+import { StyleSheet, Text, Animated, View } from "react-native";
+import { Easing } from "react-native";
 const ProgressBar = ({
   height,
   progress,
@@ -13,6 +13,18 @@ const ProgressBar = ({
   const isCompleted = () => {
     return progress === total;
   };
+
+  const progressAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(progressAnim, {
+      toValue: progress,
+      duration: 250,
+      useNativeDriver: false,
+      easing: Easing.linear,
+    }).start();
+  }, [progress]);
+
   const styles = StyleSheet.create({
     container: {
       flexDirection: "row",
@@ -48,16 +60,19 @@ const ProgressBar = ({
 
   return (
     <View style={styles.container}>
-      {progress !== 0 && (
-        <View
-          style={[
-            styles.progressBar,
-            { width: `${(progress / total) * 100}%` },
-          ]}
-        >
-          <Text style={styles.text}>{progress}</Text>
-        </View>
-      )}
+      <Animated.View
+        style={[
+          styles.progressBar,
+          {
+            width: progressAnim.interpolate({
+              inputRange: [0, total],
+              outputRange: ["0%", "100%"],
+            }),
+          },
+        ]}
+      >
+        <Text style={styles.text}>{progress}</Text>
+      </Animated.View>
       <View
         style={[
           styles.background,

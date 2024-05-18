@@ -153,7 +153,6 @@ const ShoppingListsContent = (props) => {
     setAddListModalVisible(true);
   };
 
-  // todo kyrya
   const handleRefresh = () => {
     setRefreshing(true);
     utils.checkAuth().then((user) => {
@@ -292,13 +291,7 @@ const ShoppingListsContent = (props) => {
   );
 
   const handleDelete = (item) => {
-    utils.checkAuth().then((user) => {
-      if (user) {
-        dataManager.deleteList(item).then((r) => handleRefresh());
-      } else {
-        dataManager.deleteListLocal(item.id).then((r) => handleRefresh());
-      }
-    });
+    dataManager.deleteList(item).then((r) => handleRefresh());
   };
 
   const renderHiddenItem = (data) => (
@@ -326,7 +319,7 @@ const ShoppingListsContent = (props) => {
               handleRefresh={handleRefresh}
               list={lizt.item}
               progress={{
-                value: lizt.item.progress,
+                value: utils.getListItemsCheckedSize(lizt.item.shops),
                 overall: utils.getListItemsSize(lizt.item),
               }}
               navigation={props.navigation}

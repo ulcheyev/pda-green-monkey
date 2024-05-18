@@ -26,6 +26,8 @@ import {
 } from "firebase/firestore";
 import LocalDB from "./LocalDB";
 import { he } from "react-native-paper-dates";
+import useUtils from "../utils/Utils";
+import firebase from "firebase/compat";
 
 class DataManager {
   static instance;
@@ -58,6 +60,7 @@ class DataManager {
     this.localdb = new LocalDB();
     this.shop_wait = false;
     this.list_wait = false;
+    this.utils = useUtils();
   }
 
   register(user) {
@@ -78,7 +81,9 @@ class DataManager {
         navigation.pop();
         navigation.navigate("Login");
       })
-      .catch((error) => {});
+      .catch((error) => {
+        // ignored
+      });
   }
 
   getCurrentUser() {
@@ -105,6 +110,16 @@ class DataManager {
       console.error("Error getting items from shop:", error);
       return [];
     }
+  }
+
+  async getListShopsByListId(listId) {
+    const listRef = doc(db, "lists", listId);
+    const listDocSnap = await getDoc(listRef);
+    if (!listDocSnap.exists()) {
+      console.log("List document does not exist.");
+      return [];
+    }
+    return this.getListShops(listDocSnap);
   }
 
   async getListShops(listDocSnap) {
@@ -234,58 +249,6 @@ class DataManager {
     }
   }
 
-  async updateList(list) {
-    const listRef = doc(db, "lists", `${list.id}`);
-    const batch = writeBatch(db);
-
-    batch.set(
-      listRef,
-      {
-        name: list.name,
-        isTemplate: list.isTemplate,
-        progress: list.progress,
-        uid: list.uid,
-      },
-      { merge: true },
-    );
-
-    for (const shop of list.shops) {
-      if (!shop.id) {
-        const newShopRef = await addDoc(collection(db, "shops"), {
-          name: shop.name,
-          items: [],
-        });
-        shop.id = newShopRef.id;
-      }
-      const shopRef = doc(db, "shops", `${shop.id}`);
-
-      for (const item of shop.items) {
-        if (!item.id) {
-          const newItemRef = await addDoc(collection(db, "items"), {
-            name: item.name,
-            measure: item.measure,
-            price: item.price,
-            checked: item.checked,
-            quantity: item.quantity,
-          });
-          item.id = newItemRef.id;
-        }
-
-        const itemRef = doc(db, "items", `${item.id}`);
-        batch.update(shopRef, { items: arrayUnion(itemRef) });
-      }
-
-      batch.update(listRef, { shops: arrayUnion(shopRef) });
-    }
-
-    try {
-      await batch.commit();
-      console.log("List and all associated shops were updated successfully");
-    } catch (error) {
-      console.error("Failed to update list and its relations:", error);
-    }
-  }
-
   async updateItem(item) {
     const itemRef = doc(db, "items", `${item.id}`);
     const batch = writeBatch(db);
@@ -315,50 +278,6 @@ class DataManager {
     this.localdb
       .incrementPurchasePrice(shop, date, price)
       .then(() => console.log("Incremented "));
-  }
-
-  async updateListName(list, newName) {
-    const q = query(
-      collection(db, "lists"),
-      where("uid", "==", this.getCurrentUser().uid),
-      where("id", "==", list.id),
-    );
-    // update name
-    try {
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        querySnapshot.forEach(async (document) => {
-          const docRef = document.ref;
-          await updateDoc(docRef, {
-            name: newName,
-          });
-        });
-        console.log("List name updated successfully");
-      } else {
-        console.log("No document found with the given ID and user ID.");
-      }
-    } catch (error) {
-      console.error("Error updating document:", error);
-    }
-  }
-
-  async deleteList(list) {
-    const listRef = doc(db, "lists", `${list.id}`);
-
-    try {
-      const listDoc = await getDoc(listRef);
-      if (
-        listDoc.exists() &&
-        listDoc.data().uid === this.getCurrentUser().uid
-      ) {
-        await deleteDoc(listRef);
-        console.log("Document successfully deleted.");
-      } else {
-        console.log("No document found or user mismatch.");
-      }
-    } catch (error) {
-      console.error("Error removing document: ", error);
-    }
   }
 
   async saveItemLocal(name, price, quantity, checked, measure, shopId, photo) {
@@ -420,6 +339,180 @@ class DataManager {
 
   async deleteNotificationLocal(id) {
     return this.localdb.deleteNotification(id);
+  }
+
+  deleteList(list) {
+    return this.utils.checkAuth().then((user) => {
+      if (user) {
+        return this.deleteDocumentWithSubcollections("lists", list.id, [
+          "shops",
+          "items",
+        ]);
+      } else {
+        return this.deleteListLocal(list.id);
+      }
+    });
+  }
+
+  deleteShop(shopId, listId) {
+    return this.utils.checkAuth().then((user) => {
+      if (user) {
+        return this.deleteDocumentWithSubcollections(
+          "shops",
+          shopId,
+          ["items"],
+          listId,
+          "lists",
+        );
+      } else {
+        return this.deleteShopLocal(shopId);
+      }
+    });
+  }
+
+  deleteItem(itemId, shopId) {
+    return this.utils.checkAuth().then((user) => {
+      if (user) {
+        return this.deleteDocumentWithSubcollections(
+          "items",
+          itemId,
+          [],
+          shopId,
+          "shops",
+        );
+      } else {
+        return this.deleteItemLocal(itemId);
+      }
+    });
+  }
+
+  /***
+   Note that subcollectionsToDelete is array of "tree" representation of subcollections of entity.
+   This array [one, two] means, that entity has this structure of subcollections REFERENCES:
+     main entity{
+     ones: [one references],
+     }
+     one {
+     twos: [two references]
+     }
+   ***/
+  async deleteDocumentWithSubcollections(
+    dbName,
+    id,
+    subcollectionsToDelete,
+    parentId = null,
+    parentDbName = null,
+  ) {
+    const docRef = doc(db, dbName, `${id}`);
+    try {
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        console.log("Document does not exist!");
+        return;
+      }
+
+      if (subcollectionsToDelete.length > 0) {
+        const subcollectionName = subcollectionsToDelete[0];
+        const subCollectionRefs = docSnap.data()[subcollectionName];
+
+        console.log(
+          `Processing ${subCollectionRefs.length} documents in ${subcollectionName}...`,
+        );
+
+        const deletePromises = subCollectionRefs.map((subDoc) =>
+          this.deleteDocumentWithSubcollections(
+            subcollectionName,
+            subDoc.id,
+            subcollectionsToDelete.slice(1),
+          ),
+        );
+
+        await Promise.all(deletePromises);
+      }
+
+      // update parent references
+      if (parentId && parentDbName) {
+        const parentDocRef = doc(db, parentDbName, `${parentId}`);
+        await updateDoc(parentDocRef, {
+          [dbName]: firebase.firestore.FieldValue.arrayRemove(docRef),
+        });
+        console.log(`Reference to ${dbName} removed from ${parentDocRef.path}`);
+      }
+
+      console.log(`Deleting main document: ${docRef.path}`);
+      await deleteDoc(docRef);
+      console.log(
+        `Document with path ${docRef.path} and all its subcollections have been deleted.`,
+      );
+    } catch (error) {
+      console.error("Error removing document: ", error);
+      throw new Error(
+        `Failed to delete document with path ${docRef.path}: ${error}`,
+      );
+    }
+  }
+
+  updateEntitySpecificField(dbName, id, field, newValue) {
+    const docRef = doc(db, dbName, `${id}`);
+    return updateDoc(docRef, {
+      [field]: newValue,
+    });
+  }
+
+  updateListName(list, newName) {
+    return this.updateEntitySpecificField("lists", list.id, "name", newName);
+  }
+
+  async updateList(list) {
+    const listRef = doc(db, "lists", `${list.id}`);
+    const batch = writeBatch(db);
+
+    batch.set(
+      listRef,
+      {
+        name: list.name,
+        isTemplate: list.isTemplate,
+        progress: list.progress,
+        uid: list.uid,
+      },
+      { merge: true },
+    );
+
+    for (const shop of list.shops) {
+      if (!shop.id) {
+        const newShopRef = await addDoc(collection(db, "shops"), {
+          name: shop.name,
+          items: [],
+        });
+        shop.id = newShopRef.id;
+      }
+      const shopRef = doc(db, "shops", `${shop.id}`);
+
+      for (const item of shop.items) {
+        if (!item.id) {
+          const newItemRef = await addDoc(collection(db, "items"), {
+            name: item.name,
+            measure: item.measure,
+            price: item.price,
+            checked: item.checked,
+            quantity: item.quantity,
+          });
+          item.id = newItemRef.id;
+        }
+
+        const itemRef = doc(db, "items", `${item.id}`);
+        batch.update(shopRef, { items: arrayUnion(itemRef) });
+      }
+
+      batch.update(listRef, { shops: arrayUnion(shopRef) });
+    }
+
+    try {
+      await batch.commit();
+      console.log("List and all associated shops were updated successfully");
+    } catch (error) {
+      console.error("Failed to update list and its relations:", error);
+    }
   }
 
   async getListOverallItemsLocal(listId) {
