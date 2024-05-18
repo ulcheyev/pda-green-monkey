@@ -95,7 +95,7 @@ const StatisticsContent = (props) => {
         endDateText = "12-31-2024";
       } else {
         startDateText = formatDate(startDate);
-        endDateText = formatDate(startDate);
+        endDateText = formatDate(endDate);
       }
       console.log(startDate);
       console.log(endDate);
@@ -109,7 +109,7 @@ const StatisticsContent = (props) => {
     dataManager.getPurchasesGroupedByShopLocal(dateFrom, dateTo).then((r) => {
       setShopsDivided(r);
       console.log("Shops divided are");
-      console.log(shopsDivided);
+      console.log(r);
     });
   };
 

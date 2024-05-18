@@ -215,6 +215,7 @@ class DataManager {
   }
 
   convertToGroupedByShop(group) {
+    console.log(group.rows._array);
     return group.rows._array.map((item) => {
       const d = {
         value: item.total_price,

@@ -242,6 +242,9 @@ class LocalDB {
         updateQuery,
         [price, date, shop],
         (tx, r) => {
+          console.log(date);
+          console.log(shop);
+          console.log(price);
           console.log("updatedd");
         },
         console.error,
@@ -404,6 +407,8 @@ class LocalDB {
           sqlQuery,
           [dateFrom, dateTo],
           (txObt, result) => {
+            console.log(dateFrom);
+            console.log(dateTo);
             resolve(result);
           },
           console.error,
