@@ -31,7 +31,7 @@ const ShopCard = (props) => {
     animationStyle: {
       height: animationValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, 300],
+        outputRange: [0, 320],
       }),
       overflow: "hidden",
     },
@@ -44,6 +44,9 @@ const ShopCard = (props) => {
     accordionTitle: {
       fontSize: 20,
       flexGrow: 1,
+    },
+    itemList: {
+      maxHeight: 253,
     },
   });
 
@@ -122,6 +125,7 @@ const ShopCard = (props) => {
           <View style={styles.itemsContainer}>
             <FlatList
               alwaysBounceVertical={false}
+              style={styles.itemList}
               data={props.shop.items}
               renderItem={(item) => {
                 return (
@@ -134,7 +138,7 @@ const ShopCard = (props) => {
                   />
                 );
               }}
-            />
+            ></FlatList>
             <AddItemButton shop={props.shop} addItem={props.addItem} />
           </View>
         </Animated.View>
