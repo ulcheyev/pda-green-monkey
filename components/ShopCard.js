@@ -62,6 +62,7 @@ const ShopCard = (props) => {
       }).start();
     }
     setExpanded(!expanded);
+    props.onClick(props.shop);
   };
 
   const getTotal = () => {

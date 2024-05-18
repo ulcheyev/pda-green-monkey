@@ -32,8 +32,10 @@ class Utils {
   }
 }
 
+const INSTANCE = new Utils();
+
 const useUtils = () => {
-  return useMemo(() => new Utils(), []);
+  return INSTANCE;
 };
 
 export default useUtils;

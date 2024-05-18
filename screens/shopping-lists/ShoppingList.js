@@ -26,6 +26,7 @@ const ShoppingList = (props) => {
   const theme = useTheme();
   const dataManager = useDataManager();
 
+  const [currentExpandedShop, setCurrentExpandedShop] = useState(null);
   const [visible, setVisible] = useState(false);
   const [addShopName, setAddShopName] = React.useState("");
   const [shopToAddId, setShopToAddId] = React.useState("");
@@ -64,7 +65,11 @@ const ShoppingList = (props) => {
   const refreshShops = () => {
     utils.checkAuth().then((user) => {
       if (user) {
-        console.log("User is online");
+        dataManager
+          .getListShopsByListId(props.route.params.list.id)
+          .then((res) => {
+            setShops(res);
+          });
       } else {
         dataManager.getShopsLocal(props.route.params.list.id).then((res) => {
           setShops(res);
@@ -206,7 +211,7 @@ const ShoppingList = (props) => {
 
   const confirmItemDelete = () => {
     console.log(`Deleting item ${itemIdToDelete}`);
-    dataManager.deleteItemLocal(itemIdToDelete).then(() => {
+    dataManager.deleteItem(itemIdToDelete, currentExpandedShop.id).then(() => {
       console.log("Refreshing shops");
       refreshShops();
     });
@@ -228,7 +233,9 @@ const ShoppingList = (props) => {
   };
 
   const confirmShopDelete = () => {
-    dataManager.deleteShopLocal(shopIdToDelete).then(() => refreshShops());
+    dataManager
+      .deleteShop(shopIdToDelete, props.route.params.list.id)
+      .then(() => refreshShops());
     setShopIdToDelete();
     setShopNameToDelete("");
     setDeleteShopModalVisible(false);
@@ -297,7 +304,7 @@ const ShoppingList = (props) => {
   };
 
   const validateEmpty = (text) => {
-    return text.trim().length === 0;
+    return text && text.trim().length === 0;
   };
 
   const toggleCamera = async () => {
@@ -441,6 +448,7 @@ const ShoppingList = (props) => {
           renderItem={(shop) => {
             return (
               <ShopCard
+                onClick={setCurrentExpandedShop}
                 shop={shop.item}
                 id={shop.item.id}
                 itemDelete={openDeleteItemModal}
