@@ -31,7 +31,7 @@ const Header = ({ navigation, back }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 0 }}>
+    <SafeAreaView style={{ flex: 0, backgroundColor: theme.colors.primary }}>
       <Appbar.Header style={styles.header}>
         {back ? (
           <Appbar.BackAction
