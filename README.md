@@ -1,7 +1,13 @@
 # Green Monkey
-
+<div align="center">
+    <img src="https://github.com/ulcheyev/pda-green-monkey/assets/94138754/ef28edfc-66b0-49bd-beea-c9e9bceb3f79" width="150">
+</div>
 Green Monkey is a practical tool designed to simplify shopping planning and organization. The application offers users
 an intuitive and user-friendly interface for easy creation and management of shopping lists.
+
+
+
+
 
 ## Prerequisites
 
