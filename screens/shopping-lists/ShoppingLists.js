@@ -19,7 +19,6 @@ import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSettings } from "../../services/SettingsContext";
 import * as Notifications from "expo-notifications";
-import * as Permissions from "expo-permissions";
 
 const ShoppingListsContent = (props) => {
   const [addListModalVisible, setAddListModalVisible] = useState(false);
