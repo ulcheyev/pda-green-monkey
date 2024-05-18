@@ -196,10 +196,8 @@ const ShoppingListsContent = (props) => {
   }
 
   useEffect(() => {
-    if (settings?.notifications) {
-      registerForPushNotificationsAsync();
-      scheduleNotification();
-    }
+    registerForPushNotificationsAsync();
+    scheduleNotification();
   }, []);
 
   const hideAddItemModal = () => {

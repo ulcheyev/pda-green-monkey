@@ -581,18 +581,19 @@ const ShoppingList = (props) => {
           </View>
           <View style={styles.horizontalContainer} marginTop={15}>
             <TextInput
+              label="Price"
+              style={styles.thirdInput}
+              onChangeText={setAddItemPrice}
+              error={priceError && "red"}
+            />
+            <TextInput
               label="Quantity"
               style={styles.thirdInput}
               onChangeText={setAddItemQuantity}
               error={quantityError && "red"}
               defaultValue={addItemQuantity.toString()}
             />
-            <TextInput
-              label="Price"
-              style={styles.thirdInput}
-              onChangeText={setAddItemPrice}
-              error={priceError && "red"}
-            />
+
             <TextInput
               label="Unit"
               style={styles.thirdInput}
