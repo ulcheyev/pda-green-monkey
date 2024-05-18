@@ -61,3 +61,9 @@ $ npx expo start
 ```shell
 $ git-crypt unlock
 ```
+
+5. build app command
+
+```shell
+$ eas build --profile "production/preview" --platform "all/android/ios"
+```
