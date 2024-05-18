@@ -53,7 +53,6 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete, updateProgress }) => {
   });
 
   const itemOnPress = () => {
-
     utils.checkAuth().then((user) => {
       if (user) {
         const currItem = item.item;
@@ -69,7 +68,6 @@ const ListItem = ({ item, setPhoto, shopName, itemDelete, updateProgress }) => {
         }
       }
     });
-
   };
 
   var photo;

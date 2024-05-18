@@ -171,7 +171,6 @@ const ShoppingListsContent = (props) => {
   async function registerForPushNotificationsAsync() {
     console.log("Asking for permission");
     const { status } = await Notifications.getPermissionsAsync();
-    console.log(status);
     if (status !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
       return;

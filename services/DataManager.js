@@ -62,57 +62,6 @@ class DataManager {
     this.utils = useUtils();
   }
 
-  getTestData = () => {
-    let dataList = testData.map((dataItem) => {
-      const l = new List(dataItem.name, dataItem.id);
-      l.shops = dataItem.shops.map((shopItem) => {
-        var s = new Shop(shopItem.name);
-        s.items = shopItem.items.map((itemItem) => {
-          var item = new Item(
-            itemItem.quantity,
-            itemItem.checked,
-            itemItem.measure,
-            itemItem.name,
-            itemItem.photo,
-          );
-          return item;
-        });
-        return s;
-      });
-      l.updateProgress();
-      return l;
-    });
-
-    return dataList;
-  };
-
-  getTestNotifications = () => {
-    return testNotifications.map(
-      (notificationItem) =>
-        new Notification(notificationItem.detailedText, notificationItem.name),
-    );
-  };
-  // changeTestNotificationCheckedById = (id) => {
-  //   testNotifications = testNotifications.map((item) => {
-  //     if (item.id == id) {
-  //       item.checked = !item.checked;
-  //     }
-  //     return item;
-  //   });
-  // };
-  addItemToShopInListId = (shop, listId, item) => {
-    testData = testData.map((list) => {
-      if (list.id == listId) {
-        list.shop = list.shops.map((shop) => {
-          if (shop.name == shop) {
-            shop.items.push(item);
-          }
-        });
-      }
-      return list;
-    });
-  };
-
   register(user) {
     return createUserWithEmailAndPassword(auth, user.email, user.password);
   }
@@ -250,9 +199,8 @@ class DataManager {
   }
 
   convertToNotification(notificationSQL) {
-    console.log("Converting to items");
     return notificationSQL.rows._array.map((n) => {
-      let notification = new Notification(n.text, n.header, n.date);
+      let notification = new Notification(n.id, n.text, n.header, n.date);
       return notification;
     });
   }
@@ -272,7 +220,6 @@ class DataManager {
   }
 
   async getShopItemsLocal(shopId) {
-    //console.log(`Getting items for shop ${shopId}`);
     return this.localdb
       .getShopItems(shopId)
       .then((res) => this.convertToItem(res));
@@ -291,6 +238,37 @@ class DataManager {
     } catch (error) {
       throw error;
     }
+  }
+
+  async updateItem(item) {
+    const itemRef = doc(db, "items", `${item.id}`);
+    const batch = writeBatch(db);
+
+    batch.set(
+      itemRef,
+      {
+        name: item.name,
+        measure: item.measure,
+        price: item.price,
+        checked: item.checked,
+        quantity: item.quantity,
+      },
+      { merge: true },
+    );
+
+    try {
+      await batch.commit();
+      console.log("Item was updated successfully");
+    } catch (error) {
+      console.error("Failed to update item:", error);
+    }
+  }
+
+  async incrementPurchasePrice(shop, price) {
+    const date = this.formatDate(new Date());
+    this.localdb
+      .incrementPurchasePrice(shop, date, price)
+      .then(() => console.log("Incremented "));
   }
 
   async updateListName(list, newName) {
@@ -339,7 +317,6 @@ class DataManager {
   }
 
   async saveShopLocal(name, listId) {
-    //console.log(this.localdb)
     return this.localdb.createShop(listId, name);
   }
 
@@ -359,27 +336,12 @@ class DataManager {
       .then((res) => this.convertToGroupedByShop(res));
   }
 
-  async incrementPurchasePrice(shop, price) {
-    const date = this.formatDate(new Date());
-    this.localdb
-      .incrementPurchasePrice(shop, date, price)
-      .then(() => console.log("Incremented "));
-  }
-
   async deleteShopLocal(shopId) {
     return this.localdb.deleteShop(shopId);
   }
 
   async deleteItemLocal(itemId) {
     return this.localdb.deleteItem(itemId);
-  }
-
-  async incrementListProgressLocal(shopId) {
-    return this.localdb.incrementProgress(shopId);
-  }
-
-  async decrementListProgressLocal(shopId) {
-    return this.localdb.decrementProgress(shopId);
   }
 
   async deleteListLocal(listId) {
@@ -391,7 +353,7 @@ class DataManager {
     return this.localdb.saveNotification(date, head, text);
   }
 
-  async deleteNotification(id) {
+  async deleteNotificationLocal(id) {
     return this.localdb.deleteNotification(id);
   }
 

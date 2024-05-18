@@ -78,8 +78,19 @@ const ShopCard = (props) => {
     }
     return progress;
   };
+
+  const handleShopDelete = () => {
+    if (!expanded) {
+      props.shopDelete(props.shop.id, props.shop.name);
+    }
+  };
+
   return (
-    <TouchableWithoutFeedback onPress={toggleExpand}>
+    <TouchableWithoutFeedback
+      onPress={toggleExpand}
+      onLongPress={handleShopDelete}
+      delayLongPress={500}
+    >
       <View style={styles.shopListAccordion}>
         <View style={styles.accordionTitleContainer}>
           <Text style={styles.accordionTitle}>{props.shop.name}</Text>

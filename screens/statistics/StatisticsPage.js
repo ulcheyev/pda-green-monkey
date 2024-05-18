@@ -5,7 +5,9 @@ import { useTheme, Card } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import { BarChart, LineChart } from "react-native-gifted-charts";
 import { Button } from "react-native-paper";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+
 import { DatePickerModal, registerTranslation } from "react-native-paper-dates";
 import useDataManager from "../../services/DataManager";
 import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
@@ -111,28 +113,30 @@ const StatisticsContent = (props) => {
     });
   };
 
-  useEffect(() => {
-    mapp = new Map();
-    const ob = [];
-    data.items.map((purchase) => {
-      if (mapp.has(purchase["shop"])) {
-        mapp.set(
-          purchase["shop"],
-          mapp.get(purchase["shop"]) + purchase["price"],
-        );
-      } else {
-        mapp.set(purchase["shop"], purchase["price"]);
-      }
-    });
-    const arr = [...mapp.keys()];
-    arr.map((key) => ob.push({ value: mapp.get(key), label: key }));
+  // useEffect(() => {
+  //   mapp = new Map();
+  //   const ob = [];
+  //   data.items.map((purchase) => {
+  //     if (mapp.has(purchase["shop"])) {
+  //       mapp.set(
+  //         purchase["shop"],
+  //         mapp.get(purchase["shop"]) + purchase["price"],
+  //       );
+  //     } else {
+  //       mapp.set(purchase["shop"], purchase["price"]);
+  //     }
+  //   });
+  //   const arr = [...mapp.keys()];
+  //   arr.map((key) => ob.push({ value: mapp.get(key), label: key }));
 
-    setShopsDivided(ob);
-  }, []);
+  //   setShopsDivided(ob);
+  // }, []);
 
-  useEffect(() => {
-    getShopHist("01-01-2024", "12-31-2024");
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getShopHist("01-01-2024", "12-31-2024");
+    }, []),
+  );
 
   const style = StyleSheet.create({
     mainFrame: {
@@ -163,14 +167,7 @@ const StatisticsContent = (props) => {
 
   return (
     <View style={style.mainFrame}>
-      <View style={style.upperStats}>
-        <LineChart
-          data={data.values}
-          height={150}
-          noOfSections={5}
-          label="labell"
-        />
-      </View>
+      <View style={style.upperStats}></View>
       <View style={{ width: "100%" }}>
         <Card style={style.bottomCard}>
           <Button

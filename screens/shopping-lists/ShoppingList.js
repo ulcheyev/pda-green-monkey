@@ -269,7 +269,6 @@ const ShoppingList = (props) => {
     setAddItemModalVisible(true);
     setShopToAddItem(shop.name);
     setShopToAddId(shop.id);
-    //console.log(`Adding item to shop ${shop.name}`);
   };
 
   const addShop = () => {
@@ -440,11 +439,10 @@ const ShoppingList = (props) => {
         height={28}
       />
       <View style={styles.shopCardContainer}>
-        <SwipeListView
+        <FlatList
           alwaysBounceVertical={false}
           data={shops}
           style={styles.flatList}
-          disableRightSwipe={true}
           renderItem={(shop) => {
             return (
               <ShopCard
@@ -455,11 +453,10 @@ const ShoppingList = (props) => {
                 listProgress={props.route.params.list.progress}
                 addItem={openAddItemModal}
                 showPhoto={openPhotoModal}
+                shopDelete={openDeleteShopModal}
               />
             );
           }}
-          renderHiddenItem={renderHiddenItem}
-          rightOpenValue={-75}
         />
         <FAB
           icon="plus"

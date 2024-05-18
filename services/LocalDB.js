@@ -106,16 +106,6 @@ class LocalDB {
         tx.executeSql(notificationsQuery, null, (tx, r) => {
           console.log("Created notifications table");
         });
-
-        // tx.executeSql(
-        //   insertNotification,
-        //   ["Name", "This is a notification !!!!", "2024-08-02"],
-        //   (tx, r) => {
-        //     console.log("Created new notificaion");
-        //   },
-        // console.error,
-        // );
-        //console.log(FileSystem.documentDirectory);
       }),
     );
   }
@@ -137,7 +127,6 @@ class LocalDB {
           "SELECT * FROM Items WHERE shopId = ?",
           [shopId],
           (txObj, result) => {
-            console.log("Got items");
             resolve(result);
           },
           console.error,
@@ -153,7 +142,6 @@ class LocalDB {
           "SELECT * FROM Shops WHERE listId = ?",
           [listId],
           (txObt, result) => {
-            console.log("Got shops localDB");
             resolve(result);
           },
           console.error,
@@ -163,16 +151,13 @@ class LocalDB {
   };
 
   createShop = async (id, name) => {
-    console.log("db is creating");
-    console.log(`id is ${id} ${name}`);
     return new Promise((resolve, reject) => {
       this.localdatabase.transaction((tx) => {
-        console.log("entered transaction");
         tx.executeSql(
           "INSERT INTO Shops (name, listId) VALUES (?, ?)",
           [name, id],
           (txObj, result) => {
-            console.log("OK");
+            console.log("Created shop :)");
             resolve(result);
           },
           (txObj, error) => {
@@ -187,7 +172,6 @@ class LocalDB {
   createList = async (name) => {
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
-        console.log("Created list!!!");
         tx.executeSql(
           "INSERT INTO Lists (name) VALUES (?)",
           [name],
@@ -207,7 +191,6 @@ class LocalDB {
           "UPDATE Items SET checked = ? WHERE id = ?",
           [checked, itemId],
           (txObt, result) => {
-            console.log(`CHanged ${itemId} to ${checked}`);
             resolve(result);
           },
           console.error,
@@ -218,16 +201,13 @@ class LocalDB {
 
   incrementPurchasePrice = async (shop, date, price) => {
     const selectQuery = "SELECT * FROM Purchase WHERE date = ? and shop = ?";
-    console.log(date);
-    console.log("Incrementing price");
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
+        console.log("Incrementio price");
         tx.executeSql(
           selectQuery,
           [date, shop],
           (txObt, result) => {
-            console.log("Result is");
-            console.log(result.rows._array);
             if (result.rows._array.length > 0) {
               this.updatePrice(shop, date, price);
             } else {
@@ -244,7 +224,6 @@ class LocalDB {
   insertPrice = async (shop, date, price) => {
     const insertQuery =
       "INSERT INTO Purchase (shop, date, price) VALUES (?, ?, ?)";
-    console.log(shop);
     this.localdatabase.transaction((tx) => {
       tx.executeSql(
         insertQuery,
@@ -258,48 +237,12 @@ class LocalDB {
   updatePrice = async (shop, date, price) => {
     const updateQuery =
       "UPDATE Purchase SET price = (price + ?) WHERE date = ? AND shop = ?";
-    console.log(shop);
     this.localdatabase.transaction((tx) => {
       tx.executeSql(
         updateQuery,
         [price, date, shop],
         (tx, r) => {
-          console.log(r);
           console.log("updatedd");
-        },
-        console.error,
-      );
-    });
-  };
-
-  incrementProgress = async (listId) => {
-    const updateQuery =
-      "UPDATE Lists SET progress = (progress + 1) WHERE id = ?";
-    console.log(shop);
-    this.localdatabase.transaction((tx) => {
-      tx.executeSql(
-        updateQuery,
-        [listId],
-        (tx, r) => {
-          console.log(r);
-          console.log("incremented prgress");
-        },
-        console.error,
-      );
-    });
-  };
-
-  decrementProgress = async (listId) => {
-    const updateQuery =
-      "UPDATE Lists SET progress = (progress - 1) WHERE id = ?";
-    console.log(shop);
-    this.localdatabase.transaction((tx) => {
-      tx.executeSql(
-        updateQuery,
-        [listId],
-        (tx, r) => {
-          console.log(r);
-          console.log("decremented progress");
         },
         console.error,
       );
@@ -311,9 +254,7 @@ class LocalDB {
       tx.executeSql(
         "DELETE FROM Items WHERE shopId = ?",
         [shopId],
-        (txObt, result) => {
-          console.log("Deleted items shop :)");
-        },
+        (txObt, result) => {},
         console.error,
       );
     });
@@ -323,7 +264,6 @@ class LocalDB {
           "DELETE FROM Shops WHERE id = ?",
           [shopId],
           (txObt, result) => {
-            console.log("Deleted shop :)");
             resolve(result);
           },
           console.error,
@@ -338,13 +278,11 @@ class LocalDB {
         "SELECT id FROM Shops WHERE listId = ?",
         [listId],
         (txObt, result) => {
-          console.log("Selected shops for list");
           result.rows._array.map((id) => this.deleteShop(id));
         },
         console.error,
       );
     });
-    console.log("Deleting list itself");
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
         tx.executeSql(
@@ -385,7 +323,6 @@ class LocalDB {
     shopId,
     photo = "",
   ) => {
-    console.log("saving item");
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
         tx.executeSql(
@@ -449,6 +386,7 @@ class LocalDB {
           "DELETE FROM Notifications WHERE id = ?",
           [id],
           (txObt, result) => {
+            console.log("Deleted notif");
             resolve(result);
           },
         );
@@ -457,22 +395,8 @@ class LocalDB {
   };
 
   getPurchasesGroupedByShop = async (dateFrom, dateTo) => {
-    console.log("Executiong query");
-    console.log(dateFrom);
-    console.log(dateTo);
     const sqlQuery =
       "SELECT shop, SUM(price) AS total_price FROM Purchase WHERE date BETWEEN ? AND ? GROUP BY shop;";
-    this.localdatabase.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM Purchase",
-        null,
-        (txObt, result) => {
-          console.log("success");
-          console.log(result.rows._array);
-        },
-        console.error,
-      );
-    });
 
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
@@ -480,7 +404,6 @@ class LocalDB {
           sqlQuery,
           [dateFrom, dateTo],
           (txObt, result) => {
-            console.log("success");
             resolve(result);
           },
           console.error,
