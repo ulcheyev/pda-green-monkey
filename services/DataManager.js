@@ -149,7 +149,7 @@ class DataManager {
     let arr = [];
     for (let i = 0; i < res.rows._array.length; ++i) {
       const listsql = res.rows._array[i];
-      let l = new List(listsql.mane, listsql.id);
+      let l = new List(listsql.name, listsql.id);
       let shops = await this.getShopsLocal(l.id);
       l.shops = shops;
       arr.push(l);
