@@ -181,6 +181,7 @@ const ShoppingListsContent = (props) => {
     const notificaionTitle = "Hello please return to our application",
       notificationBody =
         "My developer  is starving, i need to generate money for him";
+
     await Notifications.scheduleNotificationAsync({
       content: {
         title: notificaionTitle,
@@ -195,8 +196,10 @@ const ShoppingListsContent = (props) => {
   }
 
   useEffect(() => {
-    registerForPushNotificationsAsync();
-    scheduleNotification();
+    if (settings?.notifications) {
+      registerForPushNotificationsAsync();
+      scheduleNotification();
+    }
   }, []);
 
   const hideAddItemModal = () => {

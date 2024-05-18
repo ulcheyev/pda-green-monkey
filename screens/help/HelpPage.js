@@ -17,6 +17,16 @@ const HelpPageContent = () => {
           Hello! How are you? I am under the water! Please, help me! Here too
           much raining uuuu
         </Text>
+        <Text variant="bodyLarge">Delete shop</Text>
+        <Text variant="bodyMedium">
+          Close the shop and hold a finger on it for 1s. Then, modal window
+          appears
+        </Text>
+
+        <Text variant="bodyLarge">Delete Item</Text>
+        <Text variant="bodyMedium">
+          Hold a finger on the selected item for 1s. Then, modal window appears
+        </Text>
       </Card.Content>
     </Card>
   );

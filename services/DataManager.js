@@ -59,6 +59,7 @@ class DataManager {
     );
     this.localdb = new LocalDB();
     this.shop_wait = false;
+    this.list_wait = false;
     this.utils = useUtils();
   }
 
@@ -159,8 +160,16 @@ class DataManager {
     return await Promise.all(shopsPromises);
   }
 
-  convertToLists = (res) => {
-    return res.rows._array.map((item) => new List(item.name, item.id));
+  convertToLists = async (res) => {
+    let arr = [];
+    for (let i = 0; i < res.rows._array.length; ++i) {
+      const listsql = res.rows._array[i];
+      let l = new List(listsql.name, listsql.id);
+      let shops = await this.getShopsLocal(l.id);
+      l.shops = shops;
+      arr.push(l);
+    }
+    return arr;
   };
 
   async convertToShops(shop) {
