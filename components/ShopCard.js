@@ -9,8 +9,11 @@ import {
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
 import AddItemButton from "./AddItemButton";
+import dataManager from "../services/DataManager";
+import useDataManager from "../services/DataManager";
 
 const ShopCard = (props) => {
+  const dataManager = useDataManager();
   const [expanded, setExpanded] = useState(false);
   const animationValue = useState(new Animated.Value(0))[0];
   const theme = useTheme();
@@ -128,10 +131,10 @@ const ShopCard = (props) => {
                 return (
                   <ListItem
                     item={item}
-                    updateProgress={props.updateProgress}
                     itemDelete={props.itemDelete}
                     setPhoto={props.showPhoto}
                     shopName={props.shop.name}
+                    updateProgress={props.updateProgress}
                   />
                 );
               }}

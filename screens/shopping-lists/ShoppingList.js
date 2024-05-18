@@ -49,8 +49,8 @@ const ShoppingList = (props) => {
   const [itemIdToDelete, setItemIdToDelete] = useState();
   const [itemNameToDelete, setItemNameToDelete] = useState("");
   const [deleteItemModalVisible, setDeleteItemModalVisible] = useState(false);
-  const [totalProgress, setTotalProgress] = useState(
-    utils.getListItemsSize(props.route.params.list),
+  const [currentProgress, setCurrentProgress] = useState(
+    props.route.params.progress.value,
   );
   const [shopIdToDelete, setShopIdToDelete] = useState();
   const [shopNameToDelete, setShopNameToDelete] = useState("");
@@ -68,11 +68,15 @@ const ShoppingList = (props) => {
         dataManager
           .getListShopsByListId(props.route.params.list.id)
           .then((res) => {
+            props.route.params.list.shops = res;
             setShops(res);
+            setCurrentProgress(utils.getListItemsCheckedSize(res));
           });
       } else {
         dataManager.getShopsLocal(props.route.params.list.id).then((res) => {
+          props.route.params.list.shops = res;
           setShops(res);
+          setCurrentProgress(utils.getListItemsCheckedSize(res));
         });
       }
     });
@@ -423,7 +427,7 @@ const ShoppingList = (props) => {
   return (
     <>
       <ProgressBar
-        progress={props.route.params.list.progress}
+        progress={currentProgress}
         total={utils.getListItemsSize(props.route.params.list)}
         backGroundStyles={{
           backgroundColor: "#caaae7",
@@ -448,9 +452,11 @@ const ShoppingList = (props) => {
               <ShopCard
                 onClick={setCurrentExpandedShop}
                 shop={shop.item}
+                list={props.route.params.list}
                 id={shop.item.id}
                 itemDelete={openDeleteItemModal}
-                listProgress={props.route.params.list.progress}
+                listProgress={currentProgress}
+                updateProgress={refreshShops}
                 addItem={openAddItemModal}
                 showPhoto={openPhotoModal}
                 shopDelete={openDeleteShopModal}
@@ -522,7 +528,7 @@ const ShoppingList = (props) => {
             onPress={confirmShopDelete}
             labelStyle={styles.buttonTitleStyle}
           >
-            Delete item
+            Delete shop
           </Button>
           <Button
             style={styles.button}

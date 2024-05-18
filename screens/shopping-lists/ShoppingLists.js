@@ -318,7 +318,7 @@ const ShoppingListsContent = (props) => {
               handleRefresh={handleRefresh}
               list={lizt.item}
               progress={{
-                value: lizt.item.progress,
+                value: utils.getListItemsCheckedSize(lizt.item.shops),
                 overall: utils.getListItemsSize(lizt.item),
               }}
               navigation={props.navigation}

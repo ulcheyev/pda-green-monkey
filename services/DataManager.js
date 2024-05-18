@@ -271,31 +271,6 @@ class DataManager {
       .then(() => console.log("Incremented "));
   }
 
-  async updateListName(list, newName) {
-    const q = query(
-      collection(db, "lists"),
-      where("uid", "==", this.getCurrentUser().uid),
-      where("id", "==", list.id),
-    );
-    // update name
-    try {
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        querySnapshot.forEach(async (document) => {
-          const docRef = document.ref;
-          await updateDoc(docRef, {
-            name: newName,
-          });
-        });
-        console.log("List name updated successfully");
-      } else {
-        console.log("No document found with the given ID and user ID.");
-      }
-    } catch (error) {
-      console.error("Error updating document:", error);
-    }
-  }
-
   async saveItemLocal(name, price, quantity, checked, measure, shopId, photo) {
     return this.localdb.saveItem(
       name,
@@ -468,6 +443,17 @@ class DataManager {
     }
   }
 
+  updateEntitySpecificField(dbName, id, field, newValue) {
+    const docRef = doc(db, dbName, `${id}`);
+    return updateDoc(docRef, {
+      [field]: newValue,
+    });
+  }
+
+  updateListName(list, newName) {
+    return this.updateEntitySpecificField("lists", list.id, "name", newName);
+  }
+
   async updateList(list) {
     const listRef = doc(db, "lists", `${list.id}`);
     const batch = writeBatch(db);
@@ -517,30 +503,6 @@ class DataManager {
       console.log("List and all associated shops were updated successfully");
     } catch (error) {
       console.error("Failed to update list and its relations:", error);
-    }
-  }
-
-  async updateItem(item) {
-    const itemRef = doc(db, "items", `${item.id}`);
-    const batch = writeBatch(db);
-
-    batch.set(
-      itemRef,
-      {
-        name: item.name,
-        measure: item.measure,
-        price: item.price,
-        checked: item.checked,
-        quantity: item.quantity,
-      },
-      { merge: true },
-    );
-
-    try {
-      await batch.commit();
-      console.log("Item was updated successfully");
-    } catch (error) {
-      console.error("Failed to update item:", error);
     }
   }
 }
