@@ -505,6 +505,14 @@ class DataManager {
       console.error("Failed to update list and its relations:", error);
     }
   }
+
+  async getListOverallItemsLocal(listId) {
+    return this.localdb.getListOverallItems(listId);
+  }
+
+  async getListCheckedItemsLocal(listId) {
+    return this.localdb.getListCheckedItems(listId);
+  }
 }
 
 const useDataManager = () => {
