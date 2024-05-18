@@ -411,6 +411,40 @@ class LocalDB {
       }),
     );
   };
+
+  getListOverallItems = async (listId) => {
+    const sqlQuery =
+      "SELECT COUNT(*) AS count FROM Shops AS s JOIN Items AS i ON s.listId = i.listId WHERE s.listId = ?;";
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          sqlQuery,
+          [listId],
+          (txObt, result) => {
+            resolve(result);
+          },
+          console.error,
+        );
+      }),
+    );
+  };
+
+  getListCheckedItems = async (listId) => {
+    const sqlQuery =
+      "SELECT COUNT(*) AS count FROM Shops AS s JOIN Items AS i ON s.listId = i.listId WHERE s.listId = ? AND i.checked = ?;";
+    return new Promise((resolve, reject) =>
+      this.localdatabase.transaction((tx) => {
+        tx.executeSql(
+          sqlQuery,
+          [listId, true],
+          (txObt, result) => {
+            resolve(result);
+          },
+          console.error,
+        );
+      }),
+    );
+  };
 }
 
 export default LocalDB;

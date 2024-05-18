@@ -412,6 +412,14 @@ class DataManager {
   async deleteNotificationLocal(id) {
     return this.localdb.deleteNotification(id);
   }
+
+  async getListOverallItemsLocal(listId) {
+    return this.localdb.getListOverallItems(listId);
+  }
+
+  async getListCheckedItemsLocal(listId) {
+    return this.localdb.getListCheckedItems(listId);
+  }
 }
 
 const useDataManager = () => {
