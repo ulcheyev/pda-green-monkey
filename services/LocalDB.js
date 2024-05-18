@@ -203,6 +203,7 @@ class LocalDB {
     const selectQuery = "SELECT * FROM Purchase WHERE date = ? and shop = ?";
     return new Promise((resolve, reject) =>
       this.localdatabase.transaction((tx) => {
+        console.log("Incrementio price");
         tx.executeSql(
           selectQuery,
           [date, shop],

@@ -301,6 +301,13 @@ class DataManager {
     }
   }
 
+  async incrementPurchasePrice(shop, price) {
+    const date = this.formatDate(new Date());
+    this.localdb
+      .incrementPurchasePrice(shop, date, price)
+      .then(() => console.log("Incremented "));
+  }
+
   async updateListName(list, newName) {
     const q = query(
       collection(db, "lists"),
