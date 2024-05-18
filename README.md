@@ -12,7 +12,7 @@ an intuitive and user-friendly interface for easy creation and management of sho
 
 For Android users, you can download our mobile application directly by clicking on the link below:
 
-[Download the Mobile App](APP)
+[Download the Mobile App](https://expo.dev//accounts/ulcheyev/projects/green-monkey/builds/6ba026a4-e068-498f-b0d9-a62fee05be91)
 
 Ensure your device runs Android 5.0 or later to support the app.
 
@@ -65,5 +65,5 @@ $ git-crypt unlock
 5. build app command
 
 ```shell
-$ eas build --profile "production/preview" --platform "all/android/ios"
+$ eas build --profile "production (for prod) /preview (for apk)" --platform "all/android/ios"
 ```
